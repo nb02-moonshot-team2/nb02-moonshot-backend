@@ -1,7 +1,9 @@
 ## 2팀
+
 ## ([2팀 프로젝트 계획서](https://www.notion.so/2065c17d948680e984f1e73ea7c43d70))
 
 ## 팀원 구성
+
 고민재 (개인 Github 링크)
 김진솔 (개인 Github 링크)
 하상준 (개인 Github 링크)
@@ -9,8 +11,11 @@
 차수연 (개인 Github 링크)
 
 ## 프로젝트 소개
+
 ## MoonShot
+
 ## 프로젝트 기간: 2025.07.22 ~ 2025.09.03
+
 기술 스택
 Backend: Express.js, PrismaORM
 Database: MongoDB
@@ -60,3 +65,7 @@ fetch(GET)을 통해 실시간 접속 현황을 관리
 fetch(PATCH, DELETE)을 사용하여 수강생의 개인정보 수정 및 탈퇴 처리
 공용 Modal API
 공통 Modal 컴포넌트를 처리하는 API 구현
+
+## ERD
+
+![moonshotERD](./images/moonshotERD.png)
