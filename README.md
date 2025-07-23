@@ -68,4 +68,4 @@ fetch(PATCH, DELETE)을 사용하여 수강생의 개인정보 수정 및 탈퇴
 
 ## ERD
 
-![moonshotERD](./images/moonshotERD.png)
+![moonshotERD](./images/ERDmoonshot.png)
