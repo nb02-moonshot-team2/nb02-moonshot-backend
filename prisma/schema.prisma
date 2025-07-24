@@ -1,4 +1,4 @@
-// This is your Prisma schema file,
+/ This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
@@ -21,23 +21,23 @@ model Users {
   password            String
   profileImage        String
   provider            String
-  created_at          DateTime          @default(now())
-  updated_at          DateTime          @updatedAt
-  Tokens              Tokens[]
-  Projects            Projects[]
-  SentInvitations     Invitations[]     @relation("SentInvitations")
-  ReceivedInvitations Invitations[]     @relation("ReceivedInvitations")
-  Project_members     Project_members[]
-  Tasks               Tasks[]
-  Subtasks            Subtasks[]
-  Comments            Comments[]
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  tokens              Tokens[]
+  projects            Projects[]
+  sentInvitations     Invitations[]     @relation("SentInvitations")
+  receivedInvitations Invitations[]     @relation("ReceivedInvitations")
+  projectMembers     Project_members[]
+  tasks               Tasks[]
+  subtasks            Subtasks[]
+  comments            Comments[]
 }
 
 model Tokens {
   id           Int      @id @default(autoincrement())
   refreshToken String
-  created_at   DateTime @default(now())
-  updated_at   DateTime
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
   user         Users    @relation(fields: [userId], references: [id])
   userId       Int
 }
@@ -46,13 +46,13 @@ model Projects {
   id              Int               @id @default(autoincrement())
   name            String            @db.VarChar(100)
   description     String
-  created_at      DateTime          @default(now())
-  updated_at      DateTime          @updatedAt
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
   creator         Users             @relation(fields: [creatorId], references: [id], onDelete:Cascade )
   creatorId       Int
-  Invitations     Invitations[]
-  Project_members Project_members[]
-  Tasks           Tasks[]
+  invitations     Invitations[]
+  projectMembers Project_members[]
+  tasks           Tasks[]
 }
 
 model Invitations {
@@ -63,8 +63,8 @@ model Invitations {
   invitorId   Int
   invitee     Users             @relation("ReceivedInvitations", fields: [inviteeId], references: [id], onDelete:Cascade)
   inviteeId   Int
-  invited_at  DateTime          @default(now())
-  accpeted_at DateTime
+  invitedAt  DateTime          @default(now())
+  acceptedAt DateTime
   status      invitation_status
   token       String
 }
@@ -86,25 +86,25 @@ model Tasks {
   status      task_status
   user        Users        @relation(fields: [userId], references: [id], onDelete:Cascade)
   userId      Int
-  started_at  DateTime
-  due_date    DateTime
-  created_at  DateTime     @default(now())
-  updated_at  DateTime     @updatedAt
-  Task_tags   Task_tags[]
-  Subtasks    Subtasks[]
-  Comments    Comments[]
-  Task_files  Task_files[]
+  startedAt  DateTime
+  dueDate    DateTime
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  taskTags   Task_tags[]
+  subtasks    Subtasks[]
+  comments    Comments[]
+  taskFiles  Task_files[]
 }
 
 enum invitation_status {
   pending
-  accept
-  reject
+  accepted
+  rejected
 }
 
 enum task_status {
   todo
-  in_progress
+  inProgress
   done
 }
 
@@ -120,7 +120,7 @@ model Task_tags {
 model Tags {
   id        Int         @id @default(autoincrement())
   tag       String[]    @unique
-  Task_tags Task_tags[]
+  taskTags Task_tags[]
 }
 
 model Subtasks {
@@ -128,10 +128,10 @@ model Subtasks {
   task        Tasks    @relation(fields: [taskId], references: [id], onDelete:Cascade)
   taskId      Int
   description String
-  is_done     Boolean  @default(false)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-  Users       Users?   @relation(fields: [usersId], references: [id], onDelete:Cascade)
+  isDone     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       Users?   @relation(fields: [usersId], references: [id], onDelete:Cascade)
   usersId     Int?
 }
 
@@ -142,15 +142,16 @@ model Comments {
   author     Users    @relation(fields: [authorId], references: [id], onDelete:Cascade)
   authorId   Int
   content    String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Task_files {
   id         Int      @id @default(autoincrement())
   task       Tasks    @relation(fields: [taskId], references: [id], onDelete:Cascade)
   taskId     Int
-  file_name  String
-  file_url   String
-  updated_at DateTime @updatedAt
+  fileName  String
+  fileUrl   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
