@@ -4,11 +4,11 @@
 
 ## 팀원 구성
 
-고민재 (개인 Github 링크)
-김진솔 (개인 Github 링크)
-하상준 (개인 Github 링크)
-강시연 (개인 Github 링크)
-차수연 (개인 Github 링크)
+고민재 (개인 Github 링크) </br>
+김진솔 (개인 Github 링크) </br>
+하상준 (개인 Github 링크) </br>
+강시연 (개인 Github 링크) </br>
+차수연 (개인 Github 링크) </br>
 
 ## 프로젝트 소개
 
