@@ -1,71 +1,117 @@
-## 2팀
+#  2팀 - MoonShot 프로젝트
 
-## ([2팀 프로젝트 계획서](https://www.notion.so/2065c17d948680e984f1e73ea7c43d70))
+📄 [2팀 프로젝트 계획서 보기](https://www.notion.so/2065c17d948680e984f1e73ea7c43d70)
 
-## 팀원 구성
+---
 
-고민재 (개인 Github 링크)
-김진솔 (개인 Github 링크)
-하상준 (개인 Github 링크)
-강시연 (개인 Github 링크)
-차수연 (개인 Github 링크)
+## 👨‍👩‍👧‍👦 팀원 구성
 
-## 프로젝트 소개
+| 이름     | GitHub 링크 |
+|----------|-------------|
+| 고민재   | [@nbkominjae](https://github.com/nbkominjae) |
+| 김진솔   | [@JINSOLdev](https://github.com/JINSOLdev) |
+| 하상준   | [@hippo8427](https://github.com/hippo8427) |
+| 강시연   | [@singnyeo](https://github.com/singnyeo) |
+| 차수연   | [@chya-chya](https://github.com/chya-chya) |
 
-## MoonShot
+---
 
-## 프로젝트 기간: 2025.07.22 ~ 2025.09.03
+## 📌 프로젝트 소개
 
-기술 스택
-Backend: Express.js, PrismaORM
-Database: MongoDB
-공통 Tool: Git & Github, Discord
-팀원별 구현 기능 상세
-웨인
-(자신이 개발한 기능에 대한 사진이나 gif 파일 첨부)
+- **프로젝트 이름:** MoonShot  
+- **프로젝트 주제:** 프로젝트 일정 관리 서비스 백엔드 시스템 구축  
+- **진행 기간:** 2025.07.22 ~ 2025.08.13  
 
-소셜 로그인 API
-구글 소셜 로그인 API를 활용하여 소셜 로그인 기능을 구현
-로그인 후 추가 정보 입력을 위한 API 엔드포인트 개발
-회원 추가 정보 입력 API
-회원 유형(관리자, 학생)에 따른 조건부 입력 처리 API 구현
-제이든
-(자신이 개발한 기능에 대한 사진이나 gif 파일 첨부)
+---
 
-회원별 권한 관리
-사용자의 역할에 따라 권한을 설정하는 API 구현
-관리자 페이지와 일반 사용자 페이지를 위한 조건부 라우팅 기능 개발
-반응형 레이아웃 API
-클라이언트에서 전달된 요청에 맞춰 반응형 레이아웃을 위한 API 엔드포인트 구현
-마크
-(자신이 개발한 기능에 대한 사진이나 gif 파일 첨부)
+## 🛠️ 기술 스택
 
-수강생 정보 관리 API
-fetch(GET)을 사용하여 학생의 수강 정보를 조회하는 API 엔드포인트 개발
-수강 정보의 반응형 UI 구성
-공용 Button API
-공통으로 사용할 버튼 기능을 처리하는 API 구현
-데이지
-(자신이 개발한 기능에 대한 사진이나 gif 파일 첨부)
+- **Backend:** Express.js, Prisma ORM  
+- **Database:** PostgreSQL  
+- **API 문서화:** Swagger  
+- **협업 도구:** Git & GitHub, Discord  
 
-관리자 API
-Path Parameter를 활용한 동적 라우팅 기능 구현
-fetch(PATCH, DELETE)를 사용하여 학생 정보를 수정하고 탈퇴하는 API 엔드포인트 개발
-CRUD 기능
-학생 정보 CRUD 기능을 제공하는 API 구현
-회원관리 슬라이더
-학생별 정보 목록을 carousel 방식으로 보여주는 API 개발
-제이
-(자신이 개발한 기능에 대한 사진이나 gif 파일 첨부)
+---
 
-학생 시간 정보 관리 API
-학생별 시간 정보를 조회하는 API 구현
-fetch(GET)을 통해 실시간 접속 현황을 관리
-수정 및 탈퇴 API
-fetch(PATCH, DELETE)을 사용하여 수강생의 개인정보 수정 및 탈퇴 처리
-공용 Modal API
-공통 Modal 컴포넌트를 처리하는 API 구현
+## 🧩 팀원별 구현 기능
 
-## ERD
+> 각자 개발한 기능에 대한 스크린샷, GIF, 설명 등을 첨부해주세요.
+
+### 💻 고민재
+- (구현 기능 요약)
+- ![기능 이미지](./img/minjae.gif)
+
+### 💻 김진솔
+- (구현 기능 요약)
+- ![기능 이미지](./img/jinsol.gif)
+
+### 💻 하상준
+- (구현 기능 요약)
+- ![기능 이미지](./img/sangjun.gif)
+
+### 💻 강시연
+- (구현 기능 요약)
+- ![기능 이미지](./img/siyeon.gif)
+
+### 💻 차수연
+- (구현 기능 요약)
+- ![기능 이미지](./img/sooyeon.gif)
+
+---
+
+## 📁 프로젝트 파일 구조
+📦 프로젝트 루트
+```
+├── 📁 src
+│   ├── 📁 config
+│   │   └── db.ts
+│   ├── 📁 controllers
+│   │   ├── auth.controller.ts
+│   │   └── user.controller.ts
+│   ├── 📁 middleware
+│   │   ├── auth.middleware.ts
+│   │   └── error.middleware.ts
+│   ├── 📁 routes
+│   │   ├── auth.routes.ts
+│   │   └── user.routes.ts
+│   ├── 📁 services
+│   │   ├── auth.service.ts
+│   │   └── user.service.ts
+│   ├── 📁 utils
+│   ├── app.ts
+│   └── server.ts
+├── 📁 prisma
+│   ├── schema.prisma
+│   └── seed.ts
+├── .env
+├── .gitignore
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+---
+
+## 🌐 구현 홈페이지
+
+👉 [배포 링크 삽입 예정](#)
+
+---
+
+## 📊 ERD (Entity Relationship Diagram)
+
+> ERD 이미지 삽입 예시
 
 ![moonshotERD](./images/ERDmoonshot.png)
+
+---
+
+## 🧠 프로젝트 회고 및 발표자료
+
+📎 [발표자료 다운로드](#)  
+📎 [회고 링크 / Notion / PPT 등](#)
+
+---
+
+
+
+
