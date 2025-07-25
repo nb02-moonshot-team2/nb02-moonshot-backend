@@ -59,13 +59,11 @@ export default defineConfig([
         {
           selector: 'interface',
           format: ['PascalCase'],
-          prefix: ['I'],
         },
         // enum -> PascalCase + Enum suffix
         {
           selector: 'enum',
           format: ['PascalCase'],
-          suffix: ['Enum'],
         },
         // 타입 별칭 -> PascalCase
         {
@@ -76,7 +74,6 @@ export default defineConfig([
         {
           selector: 'typeParameter',
           format: ['PascalCase'],
-          prefix: ['T'],
         },
         // 객체 리터럴 키 값 -> camelCase
         {
