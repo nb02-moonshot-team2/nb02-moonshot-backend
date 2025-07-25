@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-// ✅ 확장된 Request 타입 정의
+// 확장된 Request 타입 정의
 interface AuthenticatedRequest extends Request {
   user?: {
     id: number;
@@ -14,7 +14,7 @@ interface AuthenticatedRequest extends Request {
   };
 }
 
-// ✅ 미들웨어에서 타입 적용
+// 미들웨어에서 타입 적용
 export const addMockUser = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   req.user = {
     id: 1,
@@ -26,7 +26,6 @@ export const addMockUser = (req: AuthenticatedRequest, res: Response, next: Next
     createdAt: new Date(),
     updatedAt: new Date(),
   };
-  console.log('📥 컨트롤러에서 받은 req.user:', req.user);
 
   next();
 };
