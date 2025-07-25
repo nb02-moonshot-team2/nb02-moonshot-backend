@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { memberService } from '../services/member-service';
+import { errorMessages } from '../constants/error-messages';
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -24,13 +25,19 @@ export const getProjectMembers = async (
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
 
+    // 프로젝트 확인
     if (isNaN(projectId)) {
-      return res.status(400).json({ message: '올바르지 않은 프로젝트 ID 형식' });
+      return res.status(400).json({ message: errorMessages.badRequest });
     }
 
-    // 토큰 미사용 중이라면 userId는 undefined
-    const userId = req.user?.id;
+    // 로그인 여부 확인 (401 처리)
+    if (!req.user?.id) {
+      return res.status(401).json({ message: errorMessages.unauthorized });
+    }
 
+    const userId = req.user.id;
+
+    //
     const result = await memberService.getProjectMembers(
       projectId,
       {
@@ -41,6 +48,11 @@ export const getProjectMembers = async (
     );
     return res.status(200).json(result);
   } catch (error) {
+    const err = error as { status?: number; message?: string };
+
+    if (err.status && err.message) {
+      return res.status(err.status).json({ message: err.message });
+    }
     next(error);
   }
 };

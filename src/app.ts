@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { errorMiddleware } from './middlewares/error-moddleware';
+import { errorHandler } from './middlewares/error-moddleware';
 
 import routes from './routes/index-route';
 
@@ -20,6 +20,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/', routes);
 
 // 에러 미들웨어 등록
-app.use(errorMiddleware);
+app.use(errorHandler);
 
 export default app;

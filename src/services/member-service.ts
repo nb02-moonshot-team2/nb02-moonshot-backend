@@ -1,5 +1,6 @@
 import { ProjectMemberResponse, GetProjectMembersQuery } from '../utils/dtos/member-dto';
 import { memberRepository } from '../repositories/member-repository';
+import { errorMessages } from '../constants/error-messages';
 
 export const memberService = {
   async getProjectMembers(
@@ -7,12 +8,12 @@ export const memberService = {
     query: GetProjectMembersQuery,
     userId?: number // 현재 로그인된 사용자 (나중에 req.user.id로 전달 받을 예정)
   ): Promise<{ data: ProjectMemberResponse[]; total: number }> {
-    // 프로젝트 존재 확인
+    // 프로젝트  확인
     const project = await memberRepository.findProjectById(projectId);
     if (!project) {
       throw {
-        status: 404,
-        message: '해당 프로젝트 없음',
+        status: 400,
+        message: errorMessages.badRequest,
       };
     }
 
@@ -22,7 +23,7 @@ export const memberService = {
       if (!isMember) {
         throw {
           status: 403,
-          message: '프로젝트 멤버가 아님',
+          message: errorMessages.forbidden,
         };
       }
     }
@@ -38,7 +39,7 @@ export const memberService = {
     if (!members || members.length === 0) {
       throw {
         status: 404,
-        message: '해당 프로젝트 멤버 없음',
+        message: errorMessages.notFound,
       };
     }
 
