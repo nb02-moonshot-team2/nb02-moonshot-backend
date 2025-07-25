@@ -1,11 +1,15 @@
 import express from 'express';
+import projectRouter from './routes/project-router';
 import dotenv from 'dotenv';
+import { errorHandler } from './utils/error';
 
 dotenv.config();
 
 const app = express();
-
 app.use(express.json());
+app.use('/projects', projectRouter);
+
+app.use(errorHandler);
 
 const port = process.env.PORT;
 
