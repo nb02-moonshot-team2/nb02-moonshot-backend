@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -131,8 +130,8 @@ model Subtasks {
   is_done     Boolean  @default(false)
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
-  Users       Users?   @relation(fields: [usersId], references: [id], onDelete:Cascade)
-  usersId     Int?
+  Users       Users?   @relation(fields: [userId], references: [id], onDelete:Cascade)
+  userId     Int?
 }
 
 model Comments {
