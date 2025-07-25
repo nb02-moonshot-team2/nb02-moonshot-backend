@@ -1,5 +1,6 @@
 import express from 'express';
-import dotenv from 'dotenv';
+import cors from 'cors';
+import { errorHandler } from './middlewares/error-moddleware';
 
 dotenv.config();
 
@@ -9,6 +10,7 @@ app.use(express.json());
 
 const port = process.env.PORT;
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+// 에러 미들웨어 등록
+app.use(errorHandler);
+
+export default app;
