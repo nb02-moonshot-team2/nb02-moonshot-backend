@@ -64,7 +64,7 @@ model Invitations {
   invitee     Users             @relation("ReceivedInvitations", fields: [inviteeId], references: [id], onDelete:Cascade)
   inviteeId   Int
   invitedAt  DateTime          @default(now())
-  acceptedAt DateTime
+  acceptedAt DateTime?
   status      invitation_status
   token       String
 }
