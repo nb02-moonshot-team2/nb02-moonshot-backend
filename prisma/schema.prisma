@@ -1,0 +1,157 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id                  Int               @id @default(autoincrement())
+  email               String            @unique @db.VarChar(100)
+  name                String            @db.VarChar(100)
+  password            String
+  profileImage        String
+  provider            String
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  tokens              Tokens[]
+  projects            Projects[]
+  sentInvitations     Invitations[]     @relation("SentInvitations")
+  receivedInvitations Invitations[]     @relation("ReceivedInvitations")
+  projectMembers     Project_members[]
+  tasks               Tasks[]
+  subtasks            Subtasks[]
+  comments            Comments[]
+}
+
+model Tokens {
+  id           Int      @id @default(autoincrement())
+  refreshToken String
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+  user         Users    @relation(fields: [userId], references: [id])
+  userId       Int
+}
+
+model Projects {
+  id              Int               @id @default(autoincrement())
+  name            String            @db.VarChar(100)
+  description     String
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  creator         Users             @relation(fields: [creatorId], references: [id], onDelete:Cascade )
+  creatorId       Int
+  invitations     Invitations[]
+  projectMembers Project_members[]
+  tasks           Tasks[]
+}
+
+model Invitations {
+  id          Int               @id @default(autoincrement())
+  project     Projects          @relation(fields: [projectId], references: [id])
+  projectId   Int
+  invitor     Users             @relation("SentInvitations", fields: [invitorId], references: [id], onDelete:Cascade)
+  invitorId   Int
+  invitee     Users             @relation("ReceivedInvitations", fields: [inviteeId], references: [id], onDelete:Cascade)
+  inviteeId   Int
+  invitedAt  DateTime          @default(now())
+  acceptedAt DateTime?
+  status      invitation_status
+  token       String
+}
+
+model Project_members {
+  id        Int      @id @default(autoincrement())
+  project   Projects @relation(fields: [projectId], references: [id], onDelete:Cascade)
+  projectId Int
+  user      Users    @relation(fields: [userId], references: [id], onDelete:Cascade)
+  userId    Int
+}
+
+model Tasks {
+  id          Int          @id @default(autoincrement())
+  project     Projects     @relation(fields: [projectId], references: [id], onDelete:Cascade)
+  projectId   Int
+  title       String       @db.VarChar(100)
+  description String
+  status      task_status
+  user        Users        @relation(fields: [userId], references: [id], onDelete:Cascade)
+  userId      Int
+  startedAt  DateTime
+  dueDate    DateTime
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  taskTags   Task_tags[]
+  subtasks    Subtasks[]
+  comments    Comments[]
+  taskFiles  Task_files[]
+}
+
+enum invitation_status {
+  pending
+  accepted
+  rejected
+}
+
+enum task_status {
+  todo
+  inProgress
+  done
+}
+
+model Task_tags {
+  task   Tasks @relation(fields: [taskId], references: [id], onDelete:Cascade)
+  taskId Int
+  tag    Tags  @relation(fields: [tagId], references: [id], onDelete:Cascade)
+  tagId  Int
+
+  @@id([tagId, taskId])
+}
+
+model Tags {
+  id        Int         @id @default(autoincrement())
+  tag       String[]    @unique
+  taskTags Task_tags[]
+}
+
+model Subtasks {
+  id          Int      @id @default(autoincrement())
+  task        Tasks    @relation(fields: [taskId], references: [id], onDelete:Cascade)
+  taskId      Int
+  description String
+  isDone     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       Users?   @relation(fields: [usersId], references: [id], onDelete:Cascade)
+  usersId     Int?
+}
+
+model Comments {
+  id         Int      @id @default(autoincrement())
+  task       Tasks    @relation(fields: [taskId], references: [id], onDelete:Cascade)
+  taskId     Int
+  author     Users    @relation(fields: [authorId], references: [id], onDelete:Cascade)
+  authorId   Int
+  content    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Task_files {
+  id         Int      @id @default(autoincrement())
+  task       Tasks    @relation(fields: [taskId], references: [id], onDelete:Cascade)
+  taskId     Int
+  fileName  String
+  fileUrl   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
