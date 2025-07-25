@@ -1,10 +1,13 @@
 import { Router } from 'express';
-import { getProjectMembers } from '../controllers/member-controller';
+import { getProjectMembers, inviteMember } from '../controllers/member-controller';
 import { addMockUser } from '../middlewares/add-mock-user';
 
 const router = Router();
 
-// 인증 미들웨어 추가 예정
+// 프로젝트 멤버 조회
 router.get('/projects/:projectId/users', addMockUser, getProjectMembers);
+
+// 프로젝트에 멤버 초대
+router.post('/projects/:projectId/invitations', inviteMember);
 
 export default router;

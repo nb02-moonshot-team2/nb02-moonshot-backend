@@ -1,14 +1,18 @@
-import { ProjectMemberResponse, GetProjectMembersQuery } from '../utils/dtos/member-dto';
+import {
+  ProjectMemberResponse,
+  GetProjectMembersQuery,
+  InviteMember,
+} from '../utils/dtos/member-dto';
 import { memberRepository } from '../repositories/member-repository';
 import { errorMessages } from '../constants/error-messages';
 
 export const memberService = {
+  // 프로젝트 멤버 조회
   async getProjectMembers(
     projectId: number,
     query: GetProjectMembersQuery,
-    userId?: number // 현재 로그인된 사용자 (나중에 req.user.id로 전달 받을 예정)
+    userId?: number
   ): Promise<{ data: ProjectMemberResponse[]; total: number }> {
-    // 프로젝트  확인
     const project = await memberRepository.findProjectById(projectId);
     if (!project) {
       throw {
@@ -17,7 +21,6 @@ export const memberService = {
       };
     }
 
-    // 요청한 유저가 해당 프로젝트의 멤버인지 확인
     if (userId) {
       const isMember = await memberRepository.isProjectMember(projectId, userId);
       if (!isMember) {
@@ -28,7 +31,6 @@ export const memberService = {
       }
     }
 
-    // 멤버 목록 조회
     const skip = (query.page - 1) * query.limit;
     const { members, total } = await memberRepository.getProjectMembers(
       projectId,
@@ -62,5 +64,40 @@ export const memberService = {
       })
     );
     return { data, total };
+  },
+
+  // 프로젝트 멤버 초대
+  async inviteMember(
+    invitorId: number,
+    projectId: number,
+    dto: InviteMember
+  ): Promise<{ invitationId: string }> {
+    const project = await memberRepository.findProjectById(projectId);
+    if (!project) {
+      throw {
+        status: 400,
+        message: errorMessages.badRequest,
+      };
+    }
+
+    const isAdmin = await memberRepository.isProjectOwner(projectId, invitorId);
+    if (!isAdmin) {
+      throw {
+        status: 403,
+        message: '프로젝트 관리자가 아닙니다',
+      };
+    }
+
+    const invitee = await memberRepository.findUserByEmail(dto.email);
+    if (!invitee) {
+      throw {
+        status: 400,
+        message: '존재하지 않는 사용자입니다',
+      };
+    }
+
+    const invitation = await memberRepository.createInvitation(projectId, invitorId, invitee.id);
+
+    return { invitationId: invitation.token };
   },
 };

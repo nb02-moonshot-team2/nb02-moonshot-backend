@@ -1,7 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import { memberService } from '../services/member-service';
 import { errorMessages } from '../constants/error-messages';
+import { InviteMember } from '../utils/dtos/member-dto';
 
+// 유저 추론 타입을 위해 임의 작성
 interface AuthenticatedRequest extends Request {
   user?: {
     id: number;
@@ -15,6 +17,7 @@ interface AuthenticatedRequest extends Request {
   };
 }
 
+// 프로젝트 멤버 조회
 export const getProjectMembers = async (
   req: AuthenticatedRequest,
   res: Response,
@@ -47,6 +50,39 @@ export const getProjectMembers = async (
       userId
     );
     return res.status(200).json(result);
+  } catch (error) {
+    const err = error as { status?: number; message?: string };
+
+    if (err.status && err.message) {
+      return res.status(err.status).json({ message: err.message });
+    }
+    next(error);
+  }
+};
+
+export const inviteMember = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const projectId = parseInt(req.params.projectId, 10);
+    const { email }: InviteMember = req.body;
+
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ message: errorMessages.unauthorized });
+    }
+
+    if (!email || isNaN(projectId) || !userId) {
+      return res.status(400).json({ message: errorMessages.badRequest });
+    }
+
+    const { invitationId } = await memberService.inviteMember(userId, projectId, {
+      email,
+    });
+
+    return res.status(201).json({ invitationId });
   } catch (error) {
     const err = error as { status?: number; message?: string };
 
