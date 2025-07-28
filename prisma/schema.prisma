@@ -119,7 +119,7 @@ model Task_tags {
 
 model Tags {
   id        Int         @id @default(autoincrement())
-  tag       String[]    @unique
+  tag       String      @unique
   taskTags Task_tags[]
 }
 
