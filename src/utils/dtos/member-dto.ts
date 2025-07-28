@@ -12,10 +12,7 @@ export interface GetProjectMembersQuery {
   page: number;
   limit: number;
 }
-<<<<<<< HEAD
 
 export interface InviteMember {
   email: string;
 }
-=======
->>>>>>> 1daebffdab2725e2bdaacdba2d41220d2b656c9f
