@@ -26,6 +26,4 @@ app.use(cookieParser());
 // 에러 미들웨어 등록
 app.use(errorHandler);
 
-app.use('/auth', authRouter);
-
 export default app;
