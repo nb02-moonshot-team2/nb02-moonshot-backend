@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  // output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -63,7 +64,7 @@ model Invitations {
   invitee     Users             @relation("ReceivedInvitations", fields: [inviteeId], references: [id], onDelete:Cascade)
   inviteeId   Int
   invitedAt  DateTime          @default(now())
-  acceptedAt DateTime
+  acceptedAt DateTime?
   status      invitation_status
   token       String
 }
@@ -118,7 +119,7 @@ model Task_tags {
 
 model Tags {
   id        Int         @id @default(autoincrement())
-  tag       String[]    @unique
+  tag       String      @unique
   taskTags Task_tags[]
 }
 
