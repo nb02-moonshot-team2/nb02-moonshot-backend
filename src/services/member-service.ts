@@ -4,7 +4,12 @@ import {
   InviteMember,
 } from '../utils/dtos/member-dto';
 import { memberRepository } from '../repositories/member-repository';
-import { errorMessages } from '../constants/error-messages';
+import { statusCode, errorMsg } from '../utils/error';
+
+interface AcceptInvitationParams {
+  invitationId: number;
+  userId: number;
+}
 
 export const memberService = {
   // 프로젝트 멤버 조회
@@ -15,19 +20,13 @@ export const memberService = {
   ): Promise<{ data: ProjectMemberResponse[]; total: number }> {
     const project = await memberRepository.findProjectById(projectId);
     if (!project) {
-      throw {
-        status: 400,
-        message: errorMessages.badRequest,
-      };
+      throw { status: statusCode.notFound, message: errorMsg.projectNotFound };
     }
 
     if (userId) {
       const isMember = await memberRepository.isProjectMember(projectId, userId);
       if (!isMember) {
-        throw {
-          status: 403,
-          message: errorMessages.forbidden,
-        };
+        throw { status: statusCode.forbidden, message: errorMsg.accessDenied };
       }
     }
 
@@ -39,10 +38,7 @@ export const memberService = {
     );
 
     if (!members || members.length === 0) {
-      throw {
-        status: 404,
-        message: errorMessages.notFound,
-      };
+      throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
     }
 
     const data: ProjectMemberResponse[] = await Promise.all(
@@ -63,6 +59,7 @@ export const memberService = {
         };
       })
     );
+
     return { data, total };
   },
 
@@ -74,30 +71,44 @@ export const memberService = {
   ): Promise<{ invitationId: string }> {
     const project = await memberRepository.findProjectById(projectId);
     if (!project) {
-      throw {
-        status: 400,
-        message: errorMessages.badRequest,
-      };
+      throw { status: statusCode.badRequest, message: errorMsg.wrongRequestFormat };
     }
 
     const isAdmin = await memberRepository.isProjectOwner(projectId, invitorId);
     if (!isAdmin) {
-      throw {
-        status: 403,
-        message: '프로젝트 관리자가 아닙니다',
-      };
+      throw { status: statusCode.forbidden, message: errorMsg.accessDenied };
     }
 
     const invitee = await memberRepository.findUserByEmail(dto.email);
     if (!invitee) {
-      throw {
-        status: 400,
-        message: '존재하지 않는 사용자입니다',
-      };
+      throw { status: statusCode.badRequest, message: errorMsg.wrongRequestFormat };
     }
 
     const invitation = await memberRepository.createInvitation(projectId, invitorId, invitee.id);
 
     return { invitationId: invitation.token };
+  },
+
+  // 멤버 초대 수락
+  async acceptInvitation({
+    invitationId,
+    userId,
+  }: AcceptInvitationParams): Promise<{ message: string }> {
+    const invitation = await memberRepository.findInvitationById(invitationId);
+
+    if (!invitation) {
+      throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
+    }
+
+    if (invitation.inviteeId !== userId) {
+      throw { status: statusCode.forbidden, message: errorMsg.accessDenied };
+    }
+
+    if (invitation.acceptedAt !== null) {
+      throw { status: statusCode.badRequest, message: '이미 수락된 초대입니다.' };
+    }
+
+    await memberRepository.acceptInvitation(invitationId);
+    return { message: '초대 수락 완료' };
   },
 };

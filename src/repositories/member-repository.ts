@@ -77,4 +77,18 @@ export const memberRepository = {
       select: { token: true },
     });
   },
+
+  // 멤버 초대 수락
+  async findInvitationById(invitationId: number) {
+    return db.invitations.findUnique({
+      where: { id: invitationId },
+    });
+  },
+
+  async acceptInvitation(invitationId: number) {
+    return db.invitations.update({
+      where: { id: invitationId },
+      data: { acceptedAt: new Date(), status: 'accepted' },
+    });
+  },
 };

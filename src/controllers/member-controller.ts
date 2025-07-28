@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { memberService } from '../services/member-service';
-import { errorMessages } from '../constants/error-messages';
 import { InviteMember } from '../utils/dtos/member-dto';
+import { handleError, statusCode, errorMsg } from '../utils/error';
 
 // 유저 추론 타입을 위해 임의 작성
 interface AuthenticatedRequest extends Request {
@@ -17,6 +17,9 @@ interface AuthenticatedRequest extends Request {
   };
 }
 
+// mock user 주입 (인증 로직 대체)
+const mockUserId = 1;
+
 // 프로젝트 멤버 조회
 export const getProjectMembers = async (
   req: AuthenticatedRequest,
@@ -30,12 +33,12 @@ export const getProjectMembers = async (
 
     // 프로젝트 확인
     if (isNaN(projectId)) {
-      return res.status(400).json({ message: errorMessages.badRequest });
+      return handleError(next, null, errorMsg.wrongRequestFormat, statusCode.badRequest);
     }
 
     // 로그인 여부 확인 (401 처리)
     if (!req.user?.id) {
-      return res.status(401).json({ message: errorMessages.unauthorized });
+      return handleError(next, null, errorMsg.loginRequired, statusCode.unauthorized);
     }
 
     const userId = req.user.id;
@@ -71,11 +74,11 @@ export const inviteMember = async (
 
     const userId = req.user?.id;
     if (!userId) {
-      return res.status(401).json({ message: errorMessages.unauthorized });
+      return handleError(next, null, errorMsg.loginRequired, statusCode.unauthorized);
     }
 
     if (!email || isNaN(projectId) || !userId) {
-      return res.status(400).json({ message: errorMessages.badRequest });
+      return handleError(next, null, errorMsg.wrongRequestFormat, statusCode.badRequest);
     }
 
     const { invitationId } = await memberService.inviteMember(userId, projectId, {
@@ -89,6 +92,26 @@ export const inviteMember = async (
     if (err.status && err.message) {
       return res.status(err.status).json({ message: err.message });
     }
+    next(error);
+  }
+};
+
+// 멤버 초대 수락
+export const acceptInvitation = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const invitationId = Number(req.params.invitationId);
+
+    if (isNaN(invitationId)) {
+      return handleError(next, null, errorMsg.dataNotFound, statusCode.notFound);
+    }
+
+    const result = await memberService.acceptInvitation({
+      invitationId,
+      userId: mockUserId,
+    });
+
+    res.status(200).json(result);
+  } catch (error) {
     next(error);
   }
 };
