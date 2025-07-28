@@ -1,22 +1,16 @@
 {
   "name": "nb02-moonshot-backend",
   "version": "1.0.0",
-  "main": "app.ts",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky",
-<<<<<<< HEAD
     "start": "node dist/app.js",
-    "dev": "nodemon --watch src src/app.ts",
+    "dev": "nodemon --watch src src/server.ts",
     "build": "tsc"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
-=======
-    "start": "node dist/server.js",
-    "dev": "nodemon --watch src --exec ts-node --require tsconfig-paths/register src/server.ts",
-    "build": "tsc"
->>>>>>> 1daebffdab2725e2bdaacdba2d41220d2b656c9f
   },
   "lint-staged": {
     "*.{js,ts}": [
