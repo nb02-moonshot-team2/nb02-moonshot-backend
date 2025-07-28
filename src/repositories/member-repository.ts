@@ -1,5 +1,8 @@
 import db from '../config/db';
+<<<<<<< HEAD
 import { v4 as uuidv4 } from 'uuid';
+=======
+>>>>>>> 1daebffdab2725e2bdaacdba2d41220d2b656c9f
 
 export const memberRepository = {
   async findProjectById(projectId: number) {
@@ -43,6 +46,7 @@ export const memberRepository = {
       select: { id: true, status: true },
     });
   },
+<<<<<<< HEAD
 
   // 프로젝트 소유자 확인
   async isProjectOwner(projectId: number, userId: number) {
@@ -91,4 +95,6 @@ export const memberRepository = {
       data: { acceptedAt: new Date(), status: 'accepted' },
     });
   },
+=======
+>>>>>>> 1daebffdab2725e2bdaacdba2d41220d2b656c9f
 };

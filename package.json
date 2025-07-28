@@ -5,12 +5,18 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky",
+<<<<<<< HEAD
     "start": "node dist/app.js",
     "dev": "nodemon --watch src src/app.ts",
     "build": "tsc"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
+=======
+    "start": "node dist/server.js",
+    "dev": "nodemon --watch src --exec ts-node --require tsconfig-paths/register src/server.ts",
+    "build": "tsc"
+>>>>>>> 1daebffdab2725e2bdaacdba2d41220d2b656c9f
   },
   "lint-staged": {
     "*.{js,ts}": [
@@ -32,6 +38,7 @@
   "devDependencies": {
     "@eslint/js": "^9.31.0",
     "@types/bcrypt": "^6.0.0",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/lint-staged": "^13.3.0",
@@ -46,12 +53,14 @@
     "prettier": "^3.6.2",
     "prisma": "^6.12.0",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.38.0"
   },
   "dependencies": {
     "@prisma/client": "^6.12.0",
     "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",

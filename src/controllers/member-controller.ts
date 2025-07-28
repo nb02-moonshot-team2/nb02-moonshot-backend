@@ -1,9 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
 import { memberService } from '../services/member-service';
+<<<<<<< HEAD
 import { InviteMember } from '../utils/dtos/member-dto';
 import { handleError, statusCode, errorMsg } from '../utils/error';
 
 // 유저 추론 타입을 위해 임의 작성
+=======
+import { errorMessages } from '../constants/error-messages';
+
+>>>>>>> 1daebffdab2725e2bdaacdba2d41220d2b656c9f
 interface AuthenticatedRequest extends Request {
   user?: {
     id: number;
@@ -17,10 +22,13 @@ interface AuthenticatedRequest extends Request {
   };
 }
 
+<<<<<<< HEAD
 // mock user 주입 (인증 로직 대체)
 const mockUserId = 1;
 
 // 프로젝트 멤버 조회
+=======
+>>>>>>> 1daebffdab2725e2bdaacdba2d41220d2b656c9f
 export const getProjectMembers = async (
   req: AuthenticatedRequest,
   res: Response,
@@ -33,12 +41,20 @@ export const getProjectMembers = async (
 
     // 프로젝트 확인
     if (isNaN(projectId)) {
+<<<<<<< HEAD
       return handleError(next, null, errorMsg.wrongRequestFormat, statusCode.badRequest);
+=======
+      return res.status(400).json({ message: errorMessages.badRequest });
+>>>>>>> 1daebffdab2725e2bdaacdba2d41220d2b656c9f
     }
 
     // 로그인 여부 확인 (401 처리)
     if (!req.user?.id) {
+<<<<<<< HEAD
       return handleError(next, null, errorMsg.loginRequired, statusCode.unauthorized);
+=======
+      return res.status(401).json({ message: errorMessages.unauthorized });
+>>>>>>> 1daebffdab2725e2bdaacdba2d41220d2b656c9f
     }
 
     const userId = req.user.id;
@@ -62,6 +78,7 @@ export const getProjectMembers = async (
     next(error);
   }
 };
+<<<<<<< HEAD
 
 export const inviteMember = async (
   req: AuthenticatedRequest,
@@ -115,3 +132,5 @@ export const acceptInvitation = async (req: Request, res: Response, next: NextFu
     next(error);
   }
 };
+=======
+>>>>>>> 1daebffdab2725e2bdaacdba2d41220d2b656c9f
