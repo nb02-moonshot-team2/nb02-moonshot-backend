@@ -54,7 +54,7 @@ export const getProject = async (projectId: number) => {
     });
 
     inProgressCount = await prisma.tasks.count({
-      where: { projectId, status: task_status.in_progress },
+      where: { projectId, status: task_status.inProgress },
     });
 
     doneCount = await prisma.tasks.count({
