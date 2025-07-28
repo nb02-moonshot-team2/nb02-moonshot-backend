@@ -9,6 +9,9 @@
     "dev": "nodemon --watch src src/app.ts",
     "build": "tsc"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "lint-staged": {
     "*.{js,ts}": [
       "eslint --fix",
