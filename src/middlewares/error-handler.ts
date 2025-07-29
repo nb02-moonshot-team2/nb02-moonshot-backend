@@ -27,7 +27,6 @@ export const handleError = (
   message: string = errorMsg.serverError,
   status: number = statusCode.internalServerError
 ) => {
-  console.error('Error:', error);
   const err = new Error(message) as Error & { status?: number };
   err.status = status;
   return next(err);
@@ -41,7 +40,7 @@ export const errorHandler = (
 ) => {
   const status = err.status || statusCode.internalServerError;
   const message = err.message || errorMsg.serverError;
-   console.error('Error:', err);
+  console.error('Error:', err);
   res.status(status).json({
     success: false,
     message,
