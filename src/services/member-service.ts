@@ -63,6 +63,31 @@ export const memberService = {
     return { data, total };
   },
 
+  // 프로젝트에서 유저 제외하기
+  async removeProjectMember(projectId: number, userId: number): Promise<void> {
+    if (!userId || isNaN(userId))
+      throw { status: statusCode.unauthorized, message: errorMsg.loginRequired };
+
+    // 프로젝트 확인
+    const project = await memberRepository.findProjectById(projectId);
+    if (!project) throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
+
+    // 관리자 권한 확인
+    const isAdmin = await memberRepository.checkProjectAdmin(projectId, userId);
+    if (!isAdmin) throw { status: statusCode.forbidden, message: errorMsg.accessDenied };
+
+    // 본인 제외 불가
+    if (userId === userId) {
+      throw { status: statusCode.badRequest, message: errorMsg.wrongRequestFormat };
+    }
+
+    // 삭제 대상 유저가 실제 프로젝트 멤버인지 확인
+    const isMember = await memberRepository.isProjectMember(projectId, userId);
+    if (!isMember) throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
+
+    await memberRepository.removeProjectMember(projectId, userId);
+  },
+
   // 프로젝트 멤버 초대
   async inviteMember(
     invitorId: number,

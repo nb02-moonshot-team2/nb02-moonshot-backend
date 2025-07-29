@@ -9,6 +9,16 @@ export const memberRepository = {
     });
   },
 
+  async checkProjectAdmin(projectId: number, mockUserId: number): Promise<boolean> {
+    const propject = await db.projects.findFirst({
+      where: {
+        id: projectId,
+        creatorId: mockUserId,
+      },
+    });
+    return !!propject;
+  },
+
   async isProjectMember(projectId: number, userId: number) {
     const member = await db.project_members.findFirst({
       where: { projectId, userId },
@@ -16,6 +26,16 @@ export const memberRepository = {
     return Boolean(member);
   },
 
+  async removeProjectMember(projectId: number, userId: number): Promise<void> {
+    await db.project_members.deleteMany({
+      where: {
+        projectId,
+        userId,
+      },
+    });
+  },
+
+  // 프로젝트 멤버 조회
   async getProjectMembers(projectId: number, skip: number, take: number) {
     const members = await db.project_members.findMany({
       where: { projectId },
@@ -44,7 +64,6 @@ export const memberRepository = {
     });
   },
 
-  // 프로젝트 소유자 확인
   async isProjectOwner(projectId: number, userId: number) {
     const project = await db.projects.findFirst({
       where: {
@@ -55,7 +74,6 @@ export const memberRepository = {
     return Boolean(project);
   },
 
-  // 이메일로 사용자 조회
   async findUserByEmail(email: string) {
     return await db.users.findUnique({
       where: { email },
@@ -78,13 +96,13 @@ export const memberRepository = {
     });
   },
 
-  // 멤버 초대 수락
   async findInvitationById(invitationId: number) {
     return db.invitations.findUnique({
       where: { id: invitationId },
     });
   },
 
+  // 멤보 초대 수락
   async acceptInvitation(invitationId: number) {
     return db.invitations.update({
       where: { id: invitationId },

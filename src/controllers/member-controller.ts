@@ -18,7 +18,7 @@ interface AuthenticatedRequest extends Request {
 }
 
 // mock user 주입 (인증 로직 대체)
-const mockUserId = 1;
+const mockUserId = 2;
 
 // 프로젝트 멤버 조회
 
@@ -64,6 +64,29 @@ export const getProjectMembers = async (
   }
 };
 
+// 프로젝트에서 유저 제외하기
+export const removeProjectMember = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const projectId = Number(req.params.projectId);
+    const userId = Number(req.params.userId);
+
+    if (!projectId || isNaN(projectId)) {
+      return handleError(next, null, errorMsg.wrongRequestFormat, statusCode.badRequest);
+    }
+
+    if (!userId || isNaN(userId)) {
+      return handleError(next, null, errorMsg.wrongRequestFormat, statusCode.badRequest);
+    }
+
+    await memberService.removeProjectMember(projectId, userId);
+
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+};
+
+// 프로젝트에 멤버 초대
 export const inviteMember = async (
   req: AuthenticatedRequest,
   res: Response,
