@@ -1,29 +1,11 @@
-import { NextFunction, Request, Response } from 'express';
-import { memberService } from '../services/member-service';
-import { InviteMember } from '../utils/dtos/member-dto';
+import { NextFunction, Response } from 'express';
+import { AuthenticateRequest, InviteMember } from '../utils/dtos/member-dto';
 import { handleError, statusCode, errorMsg } from '../middlewares/error-handler';
+import { memberService } from '../services/member-service';
 
-// 유저 추론 타입을 위해 임의 작성
-interface AuthenticatedRequest extends Request {
-  user?: {
-    id: number;
-    email: string;
-    nickname: string;
-    password: string;
-    image: string | null;
-    refreshToken: string | null;
-    createdAt: Date;
-    updatedAt: Date;
-  };
-}
-
-// mock user 주입 (인증 로직 대체)
-const mockUserId = 2;
-
-// 프로젝트 멤버 조회
-
+// ✅ 프로젝트 멤버 조회
 export const getProjectMembers = async (
-  req: AuthenticatedRequest,
+  req: AuthenticateRequest,
   res: Response,
   next: NextFunction
 ) => {
@@ -32,53 +14,44 @@ export const getProjectMembers = async (
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
 
-    // 프로젝트 확인
     if (isNaN(projectId)) {
       return handleError(next, null, errorMsg.wrongRequestFormat, statusCode.badRequest);
     }
 
-    // 로그인 여부 확인 (401 처리)
     if (!req.user?.id) {
       return handleError(next, null, errorMsg.loginRequired, statusCode.unauthorized);
     }
 
     const userId = req.user.id;
 
-    //
-    const result = await memberService.getProjectMembers(
-      projectId,
-      {
-        page,
-        limit,
-      },
-      userId
-    );
+    const result = await memberService.getProjectMembers(projectId, { page, limit }, userId);
     return res.status(200).json(result);
   } catch (error) {
-    const err = error as { status?: number; message?: string };
-
-    if (err.status && err.message) {
-      return res.status(err.status).json({ message: err.message });
-    }
     next(error);
   }
 };
 
-// 프로젝트에서 유저 제외하기
-export const removeProjectMember = async (req: Request, res: Response, next: NextFunction) => {
+// ✅ 프로젝트에서 유저 제외하기
+export const removeProjectMember = async (
+  req: AuthenticateRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const projectId = Number(req.params.projectId);
-    const userId = Number(req.params.userId);
+    const targetUserId = Number(req.params.userId);
 
-    if (!projectId || isNaN(projectId)) {
+    if (!req.user?.id) {
+      return handleError(next, null, errorMsg.loginRequired, statusCode.unauthorized);
+    }
+
+    const requestUserId = req.user.id;
+
+    if (isNaN(projectId) || isNaN(targetUserId)) {
       return handleError(next, null, errorMsg.wrongRequestFormat, statusCode.badRequest);
     }
 
-    if (!userId || isNaN(userId)) {
-      return handleError(next, null, errorMsg.wrongRequestFormat, statusCode.badRequest);
-    }
-
-    await memberService.removeProjectMember(projectId, userId);
+    await memberService.removeProjectMember(projectId, targetUserId, requestUserId);
 
     res.status(204).send();
   } catch (error) {
@@ -86,53 +59,54 @@ export const removeProjectMember = async (req: Request, res: Response, next: Nex
   }
 };
 
-// 프로젝트에 멤버 초대
-export const inviteMember = async (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-) => {
+// ✅ 프로젝트에 멤버 초대
+export const inviteMember = async (req: AuthenticateRequest, res: Response, next: NextFunction) => {
   try {
     const projectId = parseInt(req.params.projectId, 10);
     const { email }: InviteMember = req.body;
 
-    const userId = req.user?.id;
-    if (!userId) {
+    if (!req.user?.id) {
       return handleError(next, null, errorMsg.loginRequired, statusCode.unauthorized);
     }
 
-    if (!email || isNaN(projectId) || !userId) {
+    const userId = req.user.id;
+
+    if (!email || isNaN(projectId)) {
       return handleError(next, null, errorMsg.wrongRequestFormat, statusCode.badRequest);
     }
 
-    const { invitationId } = await memberService.inviteMember(userId, projectId, {
-      email,
-    });
+    const { invitationId } = await memberService.inviteMember(userId, projectId, { email });
+
+    console.log('📦 req.body:', req.body);
+    console.log('📬 email:', email);
+    console.log('🧩 projectId:', projectId);
 
     return res.status(201).json({ invitationId });
   } catch (error) {
-    const err = error as { status?: number; message?: string };
-
-    if (err.status && err.message) {
-      return res.status(err.status).json({ message: err.message });
-    }
     next(error);
   }
 };
 
-// 멤버 초대 수락
-export const acceptInvitation = async (req: Request, res: Response, next: NextFunction) => {
+// ✅ 멤버 초대 수락
+export const acceptInvitation = async (
+  req: AuthenticateRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const invitationId = Number(req.params.invitationId);
+
+    if (!req.user?.id) {
+      return handleError(next, null, errorMsg.loginRequired, statusCode.unauthorized);
+    }
+
+    const userId = req.user.id;
 
     if (isNaN(invitationId)) {
       return handleError(next, null, errorMsg.dataNotFound, statusCode.notFound);
     }
 
-    const result = await memberService.acceptInvitation({
-      invitationId,
-      userId: mockUserId,
-    });
+    const result = await memberService.acceptInvitation({ invitationId, userId });
 
     res.status(200).json(result);
   } catch (error) {
@@ -140,21 +114,28 @@ export const acceptInvitation = async (req: Request, res: Response, next: NextFu
   }
 };
 
-// 멤버 초대 삭제
-export const deleteInvitation = async (req: Request, res: Response, next: NextFunction) => {
+// ✅ 멤버 초대 삭제
+export const deleteInvitation = async (
+  req: AuthenticateRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const invitationId = Number(req.params.invitationId);
+
+    if (!req.user?.id) {
+      return handleError(next, null, errorMsg.loginRequired, statusCode.unauthorized);
+    }
+
+    const userId = req.user.id;
 
     if (isNaN(invitationId)) {
       return handleError(next, null, errorMsg.wrongRequestFormat, statusCode.badRequest);
     }
 
-    await memberService.deleteInvitation({
-      invitationId,
-      userId: mockUserId,
-    });
+    await memberService.deleteInvitation({ invitationId, userId });
 
-    res.status(204).send(); // No Content
+    res.status(204).send();
   } catch (error) {
     next(error);
   }

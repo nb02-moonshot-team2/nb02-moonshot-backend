@@ -2,17 +2,14 @@ import {
   ProjectMemberResponse,
   GetProjectMembersQuery,
   InviteMember,
+  AcceptInvitationParams,
 } from '../utils/dtos/member-dto';
-import { memberRepository } from '../repositories/member-repository';
 import { statusCode, errorMsg } from '../middlewares/error-handler';
-
-interface AcceptInvitationParams {
-  invitationId: number;
-  userId: number;
-}
+import { memberRepository } from '../repositories/member-repository';
 
 export const memberService = {
-  // 프로젝트 멤버 조회
+  // member-service.ts
+
   async getProjectMembers(
     projectId: number,
     query: GetProjectMembersQuery,
@@ -43,10 +40,9 @@ export const memberService = {
 
     const data: ProjectMemberResponse[] = await Promise.all(
       members.map(async (member) => {
-        const { id, name, email, profileImage } = member.user;
+        const { id, name, email, profileImage } = member.invitee;
 
         const taskCount = await memberRepository.getTaskCount(projectId, id);
-        const invitation = await memberRepository.getInviationStatus(projectId, id);
 
         return {
           id,
@@ -54,8 +50,8 @@ export const memberService = {
           email,
           profileImage,
           taskCount,
-          status: invitation?.status ?? 'accepted',
-          invitationId: invitation?.id ?? 0,
+          status: member.status,
+          invitationId: member.id,
         };
       })
     );
@@ -63,29 +59,31 @@ export const memberService = {
     return { data, total };
   },
 
-  // 프로젝트에서 유저 제외하기
-  async removeProjectMember(projectId: number, userId: number): Promise<void> {
-    if (!userId || isNaN(userId))
+  // 프로젝트에서 유저 제외하기 -> userId를 targetUserId와 requestUserId로 나눔 (userId 하나로 관리자(=요청자)와 삭제 대상을 모두 처리하고 있기 때문)
+  async removeProjectMember(
+    projectId: number,
+    targetUserId: number,
+    requestUserId: number
+  ): Promise<void> {
+    if (!requestUserId || isNaN(requestUserId)) {
       throw { status: statusCode.unauthorized, message: errorMsg.loginRequired };
+    }
 
-    // 프로젝트 확인
     const project = await memberRepository.findProjectById(projectId);
     if (!project) throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
 
-    // 관리자 권한 확인
-    const isAdmin = await memberRepository.checkProjectAdmin(projectId, userId);
+    const isAdmin = await memberRepository.checkProjectAdmin(projectId, requestUserId);
     if (!isAdmin) throw { status: statusCode.forbidden, message: errorMsg.accessDenied };
 
     // 본인 제외 불가
-    if (userId === userId) {
+    if (requestUserId === targetUserId) {
       throw { status: statusCode.badRequest, message: errorMsg.wrongRequestFormat };
     }
 
-    // 삭제 대상 유저가 실제 프로젝트 멤버인지 확인
-    const isMember = await memberRepository.isProjectMember(projectId, userId);
+    const isMember = await memberRepository.isProjectMember(projectId, targetUserId);
     if (!isMember) throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
 
-    await memberRepository.removeProjectMember(projectId, userId);
+    await memberRepository.removeProjectMember(projectId, targetUserId);
   },
 
   // 프로젝트 멤버 초대
@@ -110,6 +108,11 @@ export const memberService = {
     }
 
     const invitation = await memberRepository.createInvitation(projectId, invitorId, invitee.id);
+
+    console.log(`📨 생성된 초대 코드: ${invitation.token}`);
+    console.log('✅ 초대한 유저 ID:', invitorId);
+    console.log('📌 프로젝트 ID:', projectId);
+    console.log('🔍 프로젝트 생성자인가?', isAdmin);
 
     return { invitationId: invitation.token };
   },
