@@ -1,5 +1,5 @@
 import express from 'express';
-import projectRouter from './routes/project-router';
+import projectRouter from './routes/project-route';
 import dotenv from 'dotenv';
 import { errorHandler } from './utils/error';
 
