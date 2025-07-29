@@ -4,7 +4,7 @@ import {
   getProjectService,
   updateProjectService,
 } from '../services/project-service';
-import { handleError, statusCode, errorMsg } from '../utils/error';
+import { handleError, statusCode, errorMsg } from '../utils/error-handler';
 
 // 프로젝트 생성
 export const createProject = async (req: Request, res: Response, next: NextFunction) => {

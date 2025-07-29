@@ -1,5 +1,5 @@
 import * as projectRepo from '../repositories/project-repository';
-import { statusCode, errorMsg } from '../utils/error';
+import { statusCode, errorMsg } from '../utils/error-handler';
 
 interface CreateProjectParams {
   creatorId: number;
