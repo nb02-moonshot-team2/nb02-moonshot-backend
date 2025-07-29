@@ -4,7 +4,7 @@ import {
   InviteMember,
 } from '../utils/dtos/member-dto';
 import { memberRepository } from '../repositories/member-repository';
-import { statusCode, errorMsg } from '../utils/error';
+import { statusCode, errorMsg } from '../middlewares/error-handler';
 
 interface AcceptInvitationParams {
   invitationId: number;

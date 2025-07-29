@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { memberService } from '../services/member-service';
 import { InviteMember } from '../utils/dtos/member-dto';
-import { handleError, statusCode, errorMsg } from '../utils/error';
+import { handleError, statusCode, errorMsg } from '../middlewares/error-handler';
 
 // 유저 추론 타입을 위해 임의 작성
 interface AuthenticatedRequest extends Request {
