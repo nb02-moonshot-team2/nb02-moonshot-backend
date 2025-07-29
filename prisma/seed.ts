@@ -1,168 +1,125 @@
 import { PrismaClient } from '@prisma/client';
-
 const prisma = new PrismaClient();
 
 async function main() {
-  // 1. Users
-  await prisma.users.createMany({
-    data: [
-      {
-        id: 1,
-        email: 'alice@example.com',
-        name: 'Alice',
-        password: 'hashed_pw_1',
-        profileImage: 'https://example.com/images/alice.png',
-        provider: 'local',
-      },
-      {
-        id: 2,
-        email: 'bob@example.com',
-        name: 'Bob',
-        password: 'hashed_pw_2',
-        profileImage: 'https://example.com/images/bob.png',
-        provider: 'local',
-      },
-      {
-        id: 3,
-        email: 'carol@example.com',
-        name: 'Carol',
-        password: 'hashed_pw_3',
-        profileImage: 'https://example.com/images/carol.png',
-        provider: 'local',
-      },
-      {
-        id: 4,
-        email: 'dave@example.com',
-        name: 'Dave',
-        password: 'hashed_pw_4',
-        profileImage: 'https://example.com/images/dave.png',
-        provider: 'local',
-      },
-      {
-        id: 5,
-        email: 'eve@example.com',
-        name: 'Eve',
-        password: 'hashed_pw_5',
-        profileImage: 'https://example.com/images/eve.png',
-        provider: 'local',
-      },
-    ],
-    skipDuplicates: true,
-  });
-
-  // 2. Tokens (로그인 상태 시뮬레이션)
-  await prisma.tokens.createMany({
-    data: [
-      {
-        userId: 1,
-        refreshToken: 'mock-refresh-token-1',
-        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // +7일
-      },
-      {
-        userId: 2,
-        refreshToken: 'mock-refresh-token-2',
-        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-      },
-      {
-        userId: 3,
-        refreshToken: 'mock-refresh-token-3',
-        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-      },
-      {
-        userId: 4,
-        refreshToken: 'mock-refresh-token-4',
-        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-      },
-      {
-        userId: 5,
-        refreshToken: 'mock-refresh-token-5',
-        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-      },
-    ],
-  });
-
-  // 3. Projects
+  // 1. Projects
   await prisma.projects.createMany({
     data: [
-      {
-        id: 1,
-        name: 'Alpha',
-        description: 'Project Alpha description',
-        creatorId: 1,
-      },
-      {
-        id: 2,
-        name: 'Beta',
-        description: 'Project Beta description',
-        creatorId: 1,
-      },
-      {
-        id: 3,
-        name: 'Gamma',
-        description: 'Project Gamma description',
-        creatorId: 2,
-      },
-      {
-        id: 4,
-        name: 'Delta',
-        description: 'Project Delta description',
-        creatorId: 2,
-      },
+      { id: 1, name: 'Project Apollo', description: 'AI 연구 프로젝트', creatorId: 1 },
+      { id: 2, name: 'Project Gemini', description: '웹 개발 프로젝트', creatorId: 2 },
+      { id: 3, name: 'Project Mercury', description: '모바일 앱 프로젝트', creatorId: 3 },
     ],
-    skipDuplicates: true,
   });
 
-  // 4. Project_members
+  // 2. Project_members (creator 포함 + 초대 수락한 유저만)
   await prisma.project_members.createMany({
     data: [
-      { projectId: 1, userId: 1 },
-      { projectId: 1, userId: 2 },
-      { projectId: 2, userId: 1 },
-      { projectId: 2, userId: 3 },
-      { projectId: 3, userId: 2 },
-      { projectId: 3, userId: 4 },
-      { projectId: 4, userId: 2 },
-      { projectId: 4, userId: 5 },
+      { id: 1, projectId: 1, userId: 1 },
+      { id: 2, projectId: 1, userId: 4 },
+      { id: 3, projectId: 1, userId: 5 },
+      { id: 4, projectId: 1, userId: 6 },
+      { id: 5, projectId: 2, userId: 2 },
+      { id: 6, projectId: 2, userId: 7 },
+      { id: 7, projectId: 2, userId: 8 },
+      { id: 8, projectId: 3, userId: 3 },
+      { id: 9, projectId: 3, userId: 9 },
     ],
-    skipDuplicates: true,
   });
 
-  // 5. Invitations
+  // 3. Invitations (accepted/pending 포함, token 추가됨)
   await prisma.invitations.createMany({
     data: [
+      // Project 1
       {
+        id: 1,
         projectId: 1,
-        invitorId: 1,
-        inviteeId: 3,
-        status: 'pending',
-        token: 'token123',
-      },
-      {
-        projectId: 2,
         invitorId: 1,
         inviteeId: 4,
         status: 'accepted',
         acceptedAt: new Date(),
-        token: 'token456',
+        token: 'token-1-4',
       },
       {
-        projectId: 3,
-        invitorId: 2,
+        id: 2,
+        projectId: 1,
+        invitorId: 1,
         inviteeId: 5,
-        status: 'rejected',
-        token: 'token789',
+        status: 'accepted',
+        acceptedAt: new Date(),
+        token: 'token-1-5',
+      },
+      {
+        id: 3,
+        projectId: 1,
+        invitorId: 1,
+        inviteeId: 6,
+        status: 'accepted',
+        acceptedAt: new Date(),
+        token: 'token-1-6',
+      },
+      {
+        id: 4,
+        projectId: 1,
+        invitorId: 1,
+        inviteeId: 7,
+        status: 'pending',
+        token: 'token-1-7',
+      },
+
+      // Project 2
+      {
+        id: 5,
+        projectId: 2,
+        invitorId: 2,
+        inviteeId: 7,
+        status: 'accepted',
+        acceptedAt: new Date(),
+        token: 'token-2-7',
+      },
+      {
+        id: 6,
+        projectId: 2,
+        invitorId: 2,
+        inviteeId: 8,
+        status: 'accepted',
+        acceptedAt: new Date(),
+        token: 'token-2-8',
+      },
+      {
+        id: 7,
+        projectId: 2,
+        invitorId: 2,
+        inviteeId: 9,
+        status: 'pending',
+        token: 'token-2-9',
+      },
+
+      // Project 3
+      {
+        id: 8,
+        projectId: 3,
+        invitorId: 3,
+        inviteeId: 9,
+        status: 'accepted',
+        acceptedAt: new Date(),
+        token: 'token-3-9',
+      },
+      {
+        id: 9,
+        projectId: 3,
+        invitorId: 3,
+        inviteeId: 10,
+        status: 'pending',
+        token: 'token-3-10',
       },
     ],
   });
 }
 
 main()
-  .then(() => {
-    console.log('✅ Seed data inserted successfully!');
-  })
+  .then(() => console.log('🌱 Seed data inserted successfully!'))
   .catch((e) => {
-    console.error('❌ Seed failed:', e);
+    console.error(e);
+    process.exit(1);
   })
-  .finally(() => {
-    prisma.$disconnect();
-  });
+  .finally(() => prisma.$disconnect());
