@@ -19,6 +19,9 @@ export const errorMsg = {
   updateProjectFailed: '프로젝트 수정 중 오류가 발생했습니다.',
   noPermissionToUpdate: '프로젝트 수정 권한이 없습니다.',
   serverError: '서버 내부 오류가 발생했습니다.',
+  badRequest: '잘못된 요청 형식',
+  unauthorized: '로그인이 필요합니다',
+  forbidden: '프로젝트 멤버가 아닙니다',
 } as const;
 
 export const handleError = (
