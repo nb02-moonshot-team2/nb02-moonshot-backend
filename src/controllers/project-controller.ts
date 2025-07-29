@@ -6,6 +6,7 @@ import {
 } from '../services/project-service';
 import { handleError, statusCode, errorMsg } from '../utils/error';
 
+// 프로젝트 생성
 export const createProject = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, description } = req.body;
@@ -23,6 +24,7 @@ export const createProject = async (req: Request, res: Response, next: NextFunct
   }
 };
 
+// 프로젝트 조회
 export const getProject = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const projectId = Number(req.params.projectId);
@@ -41,6 +43,7 @@ export const getProject = async (req: Request, res: Response, next: NextFunction
   }
 };
 
+// 프로젝트 수정
 export const updateProject = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const projectId = Number(req.params.projectId);
@@ -62,3 +65,5 @@ export const updateProject = async (req: Request, res: Response, next: NextFunct
     handleError(next, error, errorMsg.updateProjectFailed, statusCode.internalServerError);
   }
 };
+
+// 프로젝트 삭제
