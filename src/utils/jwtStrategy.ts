@@ -8,12 +8,14 @@ import passport from 'passport';
 const authRepository = new AuthRepository();
 
 const accessTokenOptions = {
-  jwtFromRequest: (req: express.Request) => req.cookies[process.env.ACCESS_TOKEN_COOKIE_NAME as string],
+  jwtFromRequest: (req: express.Request) =>
+    req.cookies[process.env.ACCESS_TOKEN_COOKIE_NAME as string],
   secretOrKey: process.env.JWT_ACCESS_TOKEN_SECRET as string,
 };
 
 const refreshTokenOptions = {
-  jwtFromRequest: (req: express.Request) => req.cookies[process.env.REFRESH_TOKEN_COOKIE_NAME as string],
+  jwtFromRequest: (req: express.Request) =>
+    req.cookies[process.env.REFRESH_TOKEN_COOKIE_NAME as string],
   secretOrKey: process.env.JWT_REFRESH_TOKEN_SECRET as string,
 };
 
@@ -28,17 +30,11 @@ const jwtVerify = async (payload: JwtPayload, done: VerifiedCallback) => {
   } catch (error) {
     done(error, false);
   }
-}
+};
 
-const accessTokenStrategy = new JwtStrategy(
-  accessTokenOptions,
-  jwtVerify
-);
+const accessTokenStrategy = new JwtStrategy(accessTokenOptions, jwtVerify);
 
-const refreshTokenStrategy = new JwtStrategy(
-  refreshTokenOptions,
-  jwtVerify
-);
+const refreshTokenStrategy = new JwtStrategy(refreshTokenOptions, jwtVerify);
 
 passport.use('access-token', accessTokenStrategy);
 passport.use('refresh-token', refreshTokenStrategy);

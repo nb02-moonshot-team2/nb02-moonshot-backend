@@ -5,7 +5,7 @@ import taskRouter from './task-route';
 
 const router = Router();
 
-// router.use('/', memberRouter);
+router.use('/', memberRouter);
 router.use('/auth', authRouter);
 router.use('/', taskRouter);
 

@@ -19,9 +19,10 @@ export const errorMsg = {
   updateProjectFailed: '프로젝트 수정 중 오류가 발생했습니다.',
   noPermissionToUpdate: '프로젝트 수정 권한이 없습니다.',
   serverError: '서버 내부 오류가 발생했습니다.',
-  badRequest: '잘못된 요청 형식',
-  unauthorized: '로그인이 필요합니다',
-  forbidden: '프로젝트 멤버가 아닙니다',
+  wrongRequestFormat: '잘못된 요청 형식 입니다.',
+  loginRequired: '로그인이 필요합니다.',
+  accessDenied: '접근 권한이 없습니다.',
+  dataNotFound: '해당 데이터를 찾을 수 없습니다.',
 } as const;
 
 export const handleError = (
@@ -30,6 +31,7 @@ export const handleError = (
   message: string = errorMsg.serverError,
   status: number = statusCode.internalServerError
 ) => {
+  console.error('Error:', error);
   const err = new Error(message) as Error & { status?: number };
   err.status = status;
   return next(err);
@@ -43,11 +45,9 @@ export const errorHandler = (
 ) => {
   const status = err.status || statusCode.internalServerError;
   const message = err.message || errorMsg.serverError;
-  console.error('Error:', err);
+
   res.status(status).json({
     success: false,
     message,
   });
 };
-
-export default errorHandler;
