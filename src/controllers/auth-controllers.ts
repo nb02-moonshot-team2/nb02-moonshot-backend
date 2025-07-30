@@ -7,7 +7,8 @@ class AuthController {
 
   register: express.RequestHandler = async (req, res, next) => {
     try {
-       req.body.provider = 'email' as Users['provider'];
+      // 구글 로그인과 구분하기 위해 provider를 email로 설정
+      req.body.provider = 'email' as Users['provider'];
       await this.authService.register(req, res, next);
     } catch (err) {
       next(err);
@@ -46,7 +47,5 @@ class AuthController {
     }
   };
 }
-
-
 
 export default AuthController;
