@@ -34,7 +34,8 @@ export const getAllTasksController = async (req: Request, res: Response, next: N
     const projectId = parseInt(req.params.projectId, 10);
     const user = req.user;
 
-    const {page,
+    const {
+      page,
       limit,
       status,
       assignee,
