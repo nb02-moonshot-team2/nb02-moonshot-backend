@@ -11,13 +11,12 @@ export const taskRepository = {
   },
 
   async isProjectMember(projectId: number, userId: number) {
-    const member = await db.project_members.findFirst({
+    return await db.project_members.findFirst({
       where: { projectId, userId },
     });
-    return Boolean(member);
   },
 
-  async getTaskProjectId(taskId: number) {
+  async getProjectIdOfTask(taskId: number) {
     return await db.tasks.findUnique({
       where: { id: taskId },
       select: { projectId: true },
