@@ -1,6 +1,4 @@
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-dotenv.config();
 
 export function generateTokens(userId: number) {
   const accessToken = jwt.sign({ sub: userId }, process.env.JWT_ACCESS_TOKEN_SECRET as string, {

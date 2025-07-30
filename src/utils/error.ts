@@ -4,13 +4,13 @@ export const statusCode = {
   success: 200,
   created: 201,
   badRequest: 400,
-  unauthorized: 401,
   forbidden: 403,
   notFound: 404,
   internalServerError: 500,
 } as const;
 
 export const errorMsg = {
+  // 프로젝트 오류
   maxProjectLimit: '프로젝트는 최대 5개까지 생성할 수 있습니다.',
   invalidProjectId: '유효한 프로젝트 ID가 아닙니다.',
   projectNotFound: '프로젝트를 찾을 수 없습니다.',
@@ -19,10 +19,12 @@ export const errorMsg = {
   updateProjectFailed: '프로젝트 수정 중 오류가 발생했습니다.',
   noPermissionToUpdate: '프로젝트 수정 권한이 없습니다.',
   serverError: '서버 내부 오류가 발생했습니다.',
-  wrongRequestFormat: '잘못된 요청 형식 입니다.',
-  loginRequired: '로그인이 필요합니다.',
-  accessDenied: '접근 권한이 없습니다.',
-  dataNotFound: '해당 데이터를 찾을 수 없습니다.',
+
+  // 하위 할 일 오류
+  requestError: '잘못된 요청 형식',
+  loginError: '로그인이 필요합니다.',
+  notProjectMemeber: '프로젝트 멤버가 아닙니다.',
+  subtaskNotFound: '하위 할 일을 찾을 수 없습니다.',
 } as const;
 
 export const handleError = (
@@ -51,8 +53,3 @@ export const errorHandler = (
     message,
   });
 };
-<<<<<<< HEAD
-
-export default errorHandler;
-=======
->>>>>>> dev

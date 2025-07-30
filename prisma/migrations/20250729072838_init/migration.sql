@@ -1,8 +1,8 @@
 -- CreateEnum
-CREATE TYPE "invitation_status" AS ENUM ('pending', 'accept', 'reject');
+CREATE TYPE "invitation_status" AS ENUM ('pending', 'accepted', 'rejected');
 
 -- CreateEnum
-CREATE TYPE "task_status" AS ENUM ('todo', 'in_progress', 'done');
+CREATE TYPE "task_status" AS ENUM ('todo', 'inProgress', 'done');
 
 -- CreateTable
 CREATE TABLE "Users" (
@@ -12,8 +12,8 @@ CREATE TABLE "Users" (
     "password" TEXT NOT NULL,
     "profileImage" TEXT NOT NULL,
     "provider" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Users_pkey" PRIMARY KEY ("id")
 );
@@ -22,8 +22,8 @@ CREATE TABLE "Users" (
 CREATE TABLE "Tokens" (
     "id" SERIAL NOT NULL,
     "refreshToken" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
     "userId" INTEGER NOT NULL,
 
     CONSTRAINT "Tokens_pkey" PRIMARY KEY ("id")
@@ -34,8 +34,8 @@ CREATE TABLE "Projects" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(100) NOT NULL,
     "description" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "creatorId" INTEGER NOT NULL,
 
     CONSTRAINT "Projects_pkey" PRIMARY KEY ("id")
@@ -47,8 +47,8 @@ CREATE TABLE "Invitations" (
     "projectId" INTEGER NOT NULL,
     "invitorId" INTEGER NOT NULL,
     "inviteeId" INTEGER NOT NULL,
-    "invited_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "accpeted_at" TIMESTAMP(3) NOT NULL,
+    "invitedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "acceptedAt" TIMESTAMP(3),
     "status" "invitation_status" NOT NULL,
     "token" TEXT NOT NULL,
 
@@ -72,10 +72,10 @@ CREATE TABLE "Tasks" (
     "description" TEXT NOT NULL,
     "status" "task_status" NOT NULL,
     "userId" INTEGER NOT NULL,
-    "started_at" TIMESTAMP(3) NOT NULL,
-    "due_date" TIMESTAMP(3) NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "startedAt" TIMESTAMP(3) NOT NULL,
+    "dueDate" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Tasks_pkey" PRIMARY KEY ("id")
 );
@@ -91,7 +91,7 @@ CREATE TABLE "Task_tags" (
 -- CreateTable
 CREATE TABLE "Tags" (
     "id" SERIAL NOT NULL,
-    "tag" TEXT[],
+    "tag" TEXT NOT NULL,
 
     CONSTRAINT "Tags_pkey" PRIMARY KEY ("id")
 );
@@ -101,9 +101,9 @@ CREATE TABLE "Subtasks" (
     "id" SERIAL NOT NULL,
     "taskId" INTEGER NOT NULL,
     "description" TEXT NOT NULL,
-    "is_done" BOOLEAN NOT NULL DEFAULT false,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "isDone" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "usersId" INTEGER,
 
     CONSTRAINT "Subtasks_pkey" PRIMARY KEY ("id")
@@ -115,8 +115,8 @@ CREATE TABLE "Comments" (
     "taskId" INTEGER NOT NULL,
     "authorId" INTEGER NOT NULL,
     "content" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Comments_pkey" PRIMARY KEY ("id")
 );
@@ -125,9 +125,10 @@ CREATE TABLE "Comments" (
 CREATE TABLE "Task_files" (
     "id" SERIAL NOT NULL,
     "taskId" INTEGER NOT NULL,
-    "file_name" TEXT NOT NULL,
-    "file_url" TEXT NOT NULL,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "fileName" TEXT NOT NULL,
+    "fileUrl" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Task_files_pkey" PRIMARY KEY ("id")
 );

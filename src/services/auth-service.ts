@@ -109,8 +109,6 @@ class AuthService {
         );
         return;
       }
-
-      // refresh token 검증
       const decoded = verifyRefreshToken(refreshToken);
       if (decoded === 'EXPIRED') {
         handleError(

@@ -7,12 +7,14 @@ import AuthRepository from '../../repositories/auth-repositorie';
 const authRepository = new AuthRepository();
 
 const accessTokenOptions = {
-  jwtFromRequest: (req: express.Request) => req.cookies[process.env.ACCESS_TOKEN_COOKIE_NAME as string],
+  jwtFromRequest: (req: express.Request) =>
+    req.cookies[process.env.ACCESS_TOKEN_COOKIE_NAME as string],
   secretOrKey: process.env.JWT_ACCESS_TOKEN_SECRET as string,
 };
 
 const refreshTokenOptions = {
-  jwtFromRequest: (req: express.Request) => req.cookies[process.env.REFRESH_TOKEN_COOKIE_NAME as string],
+  jwtFromRequest: (req: express.Request) =>
+    req.cookies[process.env.REFRESH_TOKEN_COOKIE_NAME as string],
   secretOrKey: process.env.JWT_REFRESH_TOKEN_SECRET as string,
 };
 
