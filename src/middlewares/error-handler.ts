@@ -51,8 +51,3 @@ export const errorHandler = (
     message,
   });
 };
-<<<<<<< HEAD
-
-export default errorHandler;
-=======
->>>>>>> dev
