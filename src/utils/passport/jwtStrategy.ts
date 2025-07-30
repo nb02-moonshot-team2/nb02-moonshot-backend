@@ -3,8 +3,7 @@ import { JwtPayload } from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 import express from 'express';
-import AuthRepository from '../repositories/auth-repositorie';
-import passport from 'passport';
+import AuthRepository from '../../repositories/auth-repositorie';
 const authRepository = new AuthRepository();
 
 const accessTokenOptions = {
@@ -28,19 +27,10 @@ const jwtVerify = async (payload: JwtPayload, done: VerifiedCallback) => {
   } catch (error) {
     done(error, false);
   }
-}
+};
 
-const accessTokenStrategy = new JwtStrategy(
-  accessTokenOptions,
-  jwtVerify
-);
+const accessTokenStrategy = new JwtStrategy(accessTokenOptions, jwtVerify);
 
-const refreshTokenStrategy = new JwtStrategy(
-  refreshTokenOptions,
-  jwtVerify
-);
+const refreshTokenStrategy = new JwtStrategy(refreshTokenOptions, jwtVerify);
 
-passport.use('access-token', accessTokenStrategy);
-passport.use('refresh-token', refreshTokenStrategy);
-
-export default passport;
+export { accessTokenStrategy, refreshTokenStrategy };
