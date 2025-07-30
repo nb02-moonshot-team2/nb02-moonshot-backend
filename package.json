@@ -5,13 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky",
-<<<<<<< HEAD
     "start": "node dist/server.js",
     "dev": "nodemon --watch src --exec ts-node --files --require tsconfig-paths/register src/server.ts",
-=======
-    "start": "node dist/app.js",
-    "dev": "nodemon --watch src src/server.ts",
->>>>>>> dev
     "build": "tsc"
   },
   "prisma": {
