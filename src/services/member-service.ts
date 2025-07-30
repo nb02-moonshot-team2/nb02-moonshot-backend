@@ -108,11 +108,6 @@ export const memberService = {
 
     const invitation = await memberRepository.createInvitation(projectId, invitorId, invitee.id);
 
-    console.log(`📨 생성된 초대 코드: ${invitation.token}`);
-    console.log('✅ 초대한 유저 ID:', invitorId);
-    console.log('📌 프로젝트 ID:', projectId);
-    console.log('🔍 프로젝트 생성자인가?', isAdmin);
-
     return { invitationId: invitation.token };
   },
 
