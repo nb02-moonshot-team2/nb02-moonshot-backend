@@ -11,7 +11,6 @@ export const memberRepository = {
       take,
     });
 
-    //  이 부분도 수정해야 할 것 같은데..total이 의미하는게 뭘까? 단순 프로젝트 수?
     const total = await db.project_members.count({
       where: { projectId },
     });
