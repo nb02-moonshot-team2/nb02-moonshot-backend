@@ -120,8 +120,8 @@ export const taskService = {
     const totalCount = result.total;
 
     const mappedTasks = taskList.map((task) => {
-      const start = new Date(task.startedAt);
-      const end = new Date(task.dueDate);
+      const start = task.startedAt;
+      const end = task.dueDate;
 
       // 응답 가공
       return {
@@ -161,7 +161,7 @@ export const taskService = {
   },
 
   async getTaskById(taskId: number, userId: number) {
-    const getProjectId = await taskRepository.getTaskProjectId(taskId);
+    const getProjectId = await taskRepository.getProjectIdOfTask(taskId);
     const projectId = getProjectId?.projectId;
 
     if (!projectId) {
@@ -229,7 +229,7 @@ export const taskService = {
       attachments = [],
     } = taskData;
 
-    const getProjectId = await taskRepository.getTaskProjectId(taskId);
+    const getProjectId = await taskRepository.getProjectIdOfTask(taskId);
     const projectId = getProjectId?.projectId;
 
     if (!projectId) {
@@ -296,7 +296,7 @@ export const taskService = {
   },
 
   async deleteTask(taskId: number, userId: number) {
-    const getProjectId = await taskRepository.getTaskProjectId(taskId);
+    const getProjectId = await taskRepository.getProjectIdOfTask(taskId);
     const projectId = getProjectId?.projectId;
 
     if (!projectId) {
