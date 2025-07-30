@@ -151,7 +151,7 @@ export const memberService = {
       };
     }
 
-    // 삭제 권한: 초대한 사람(inviterId)만 가능
+    // 삭제 권한: 초대한 사람(invitorId)만 가능
     console.log('invitation.invitorId:', invitation.invitorId);
     console.log('userId:', userId);
     if (invitation.invitorId !== userId) {
