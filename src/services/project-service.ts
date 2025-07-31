@@ -1,5 +1,5 @@
-import * as projectRepo from '../repositories/project-repository';
-import { statusCode, errorMsg } from '../utils/error-handler';
+import * as projectRepository from '../repositories/project-repository';
+import { statusCode, errorMsg } from '../middlewares/error-handler';
 
 interface CreateProjectParams {
   creatorId: number;
@@ -14,20 +14,38 @@ interface UpdateProjectParams {
   description?: string;
 }
 
-export const createProjectService = async (params: CreateProjectParams) => {
-  const { creatorId } = params;
+interface DeleteProjectParams {
+  creatorId: number;
+  projectId: number;
+}
 
-  const userProjects = await projectRepo.findProjectsByCreatorId(creatorId);
+// 서비스 함수 반환 타입
+interface SuccessResult<T> {
+  data: T;
+}
 
-  if (userProjects.length >= 5) {
-    return {
-      error: true,
-      status: statusCode.badRequest,
-      message: errorMsg.maxProjectLimit,
-    };
-  }
+interface ErrorResult {
+  error: true;
+  message: string;
+  status: number;
+}
 
-  const newProject = await projectRepo.createProject(params);
+type ServiceResult<T> = SuccessResult<T> | ErrorResult;
+
+export const createProjectService = async (
+  params: CreateProjectParams
+): Promise<
+  ServiceResult<{
+    id: number;
+    name: string;
+    description: string;
+    memberCount: number;
+    todoCount: number;
+    inProgressCount: number;
+    doneCount: number;
+  }>
+> => {
+  const newProject = await projectRepository.createProject(params);
 
   return {
     data: {
@@ -42,14 +60,26 @@ export const createProjectService = async (params: CreateProjectParams) => {
   };
 };
 
-export const getProjectService = async (projectId: number) => {
-  const project = await projectRepo.getProject(projectId);
+export const getProjectService = async (
+  projectId: number
+): Promise<
+  ServiceResult<{
+    id: number;
+    name: string;
+    description: string;
+    memberCount: number;
+    todoCount: number;
+    inProgressCount: number;
+    doneCount: number;
+  }>
+> => {
+  const project = await projectRepository.getProject(projectId);
 
   if (!project) {
     return {
       error: true,
       status: statusCode.badRequest,
-      message: errorMsg.badRequest,
+      message: errorMsg.projectNotFound,
     };
   }
 
@@ -69,16 +99,28 @@ export const getProjectService = async (projectId: number) => {
   };
 };
 
-export const updateProjectService = async (params: UpdateProjectParams) => {
+export const updateProjectService = async (
+  params: UpdateProjectParams
+): Promise<
+  ServiceResult<{
+    id: number;
+    name: string;
+    description: string;
+    memberCount: number;
+    todoCount: number;
+    inProgressCount: number;
+    doneCount: number;
+  }>
+> => {
   const { creatorId, projectId, name, description } = params;
 
-  const project = await projectRepo.getProject(projectId);
+  const project = await projectRepository.getProject(projectId);
 
   if (!project) {
     return {
       error: true,
       status: statusCode.badRequest,
-      message: errorMsg.badRequest,
+      message: errorMsg.projectNotFound,
     };
   }
 
@@ -86,7 +128,7 @@ export const updateProjectService = async (params: UpdateProjectParams) => {
     return {
       error: true,
       status: statusCode.forbidden,
-      message: errorMsg.forbiddenAdmin,
+      message: errorMsg.noPermissionToUpdate,
     };
   }
 
@@ -98,17 +140,47 @@ export const updateProjectService = async (params: UpdateProjectParams) => {
     };
   }
 
-  const updated = await projectRepo.updateProject({ projectId, name, description });
+  const updatedProject = await projectRepository.updateProject({ projectId, name, description });
 
   return {
     data: {
-      id: updated.id,
-      name: updated.name,
-      description: updated.description,
+      id: updatedProject.id,
+      name: updatedProject.name,
+      description: updatedProject.description,
       memberCount: project.data.memberCount,
       todoCount: project.data.todoCount,
       inProgressCount: project.data.inProgressCount,
       doneCount: project.data.doneCount,
     },
+  };
+};
+
+export const deleteProjectService = async (
+  params: DeleteProjectParams
+): Promise<ServiceResult<{ message: string }>> => {
+  const { creatorId, projectId } = params;
+
+  const project = await projectRepository.getProject(projectId);
+
+  if (!project) {
+    return {
+      error: true,
+      status: statusCode.badRequest,
+      message: errorMsg.projectNotFound,
+    };
+  }
+
+  if (project.data.creatorId !== creatorId) {
+    return {
+      error: true,
+      status: statusCode.forbidden,
+      message: errorMsg.noPermissionToUpdate,
+    };
+  }
+
+  await projectRepository.deleteProject(projectId);
+
+  return {
+    data: { message: '프로젝트가 성공적으로 삭제되었습니다.' },
   };
 };

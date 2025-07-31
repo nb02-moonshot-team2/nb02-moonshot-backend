@@ -3,18 +3,22 @@ import {
   createProjectService,
   getProjectService,
   updateProjectService,
+  deleteProjectService,
 } from '../services/project-service';
-import { handleError, statusCode, errorMsg } from '../utils/error-handler';
+import { handleError, statusCode, errorMsg } from '../middlewares/error-handler';
 
-// 프로젝트 생성
 export const createProject = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, description } = req.body;
-    const creatorId = 1; // 인증 후 req.user.id로 교체 예정
+
+    const creatorId = req.user?.id;
+    if (!creatorId) {
+      return handleError(next, null, errorMsg.loginRequired, statusCode.unauthorized);
+    }
 
     const result = await createProjectService({ creatorId, name, description });
 
-    if (result.error) {
+    if ('error' in result) {
       return handleError(next, null, result.message, result.status);
     }
 
@@ -24,7 +28,6 @@ export const createProject = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-// 프로젝트 조회
 export const getProject = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const projectId = Number(req.params.projectId);
@@ -33,7 +36,8 @@ export const getProject = async (req: Request, res: Response, next: NextFunction
     }
 
     const result = await getProjectService(projectId);
-    if (result.error) {
+
+    if ('error' in result) {
       return handleError(next, null, result.message, result.status);
     }
 
@@ -43,7 +47,6 @@ export const getProject = async (req: Request, res: Response, next: NextFunction
   }
 };
 
-// 프로젝트 수정
 export const updateProject = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const projectId = Number(req.params.projectId);
@@ -51,12 +54,16 @@ export const updateProject = async (req: Request, res: Response, next: NextFunct
       return handleError(next, null, errorMsg.invalidProjectId, statusCode.badRequest);
     }
 
-    const creatorId = 1; // 추후 req.user.id
+    const creatorId = req.user?.id;
+    if (!creatorId) {
+      return handleError(next, null, errorMsg.loginRequired, statusCode.unauthorized);
+    }
+
     const { name, description } = req.body;
 
     const result = await updateProjectService({ creatorId, projectId, name, description });
 
-    if (result.error) {
+    if ('error' in result) {
       return handleError(next, null, result.message, result.status);
     }
 
@@ -66,4 +73,26 @@ export const updateProject = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-// 프로젝트 삭제
+export const deleteProject = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const projectId = Number(req.params.projectId);
+    if (isNaN(projectId)) {
+      return handleError(next, null, errorMsg.invalidProjectId, statusCode.badRequest);
+    }
+
+    const creatorId = req.user?.id;
+    if (!creatorId) {
+      return handleError(next, null, errorMsg.loginRequired, statusCode.unauthorized);
+    }
+
+    const result = await deleteProjectService({ creatorId, projectId });
+
+    if ('error' in result) {
+      return handleError(next, null, result.message, result.status);
+    }
+
+    res.status(statusCode.success).json(result.data);
+  } catch (error) {
+    handleError(next, error, errorMsg.getProjectFailed, statusCode.internalServerError);
+  }
+};

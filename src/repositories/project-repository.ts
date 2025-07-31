@@ -1,4 +1,4 @@
-import prisma from '../lib/client';
+import prisma from '../config/db';
 import { task_status } from '@prisma/client';
 
 interface CreateProjectParams {
@@ -13,56 +13,51 @@ interface UpdateProjectParams {
   description?: string;
 }
 
-// 프로젝트 목록 조회 (생성자 기준)
-export const findProjectsByCreatorId = async (creatorId: number) => {
-  return prisma.projects.findMany({
-    where: { creatorId },
-  });
-};
+interface GetProjectWithCounts {
+  data: {
+    id: number;
+    name: string;
+    description: string;
+    memberCount: number;
+    todoCount: number;
+    inProgressCount: number;
+    doneCount: number;
+    creatorId: number;
+  };
+}
 
-// 프로젝트 생성
-export const createProject = async (params: CreateProjectParams) => {
+export const createProject = async ({ creatorId, name, description }: CreateProjectParams) => {
   return prisma.projects.create({
-    data: params,
+    data: {
+      creatorId,
+      name,
+      description,
+    },
   });
 };
 
-// 프로젝트 조회
-export const getProject = async (projectId: number) => {
+export const getProject = async (projectId: number): Promise<GetProjectWithCounts | null> => {
   const project = await prisma.projects.findUnique({
     where: { id: projectId },
   });
 
   if (!project) return null;
 
-  let memberCount = 0;
-  let todoCount = 0;
-  let inProgressCount = 0;
-  let doneCount = 0;
+  const memberCount = await prisma.project_members.count({
+    where: { projectId },
+  });
 
-  // project_members 테이블이 없어도 에러 무시
-  try {
-    memberCount = await prisma.project_members.count({ where: { projectId } });
-  } catch {
-    // ignore if table doesn't exist
-  }
+  const todoCount = await prisma.tasks.count({
+    where: { projectId, status: task_status.todo },
+  });
 
-  // tasks 테이블이 없어도 에러 무시
-  try {
-    todoCount = await prisma.tasks.count({
-      where: { projectId, status: task_status.todo },
-    });
+  const inProgressCount = await prisma.tasks.count({
+    where: { projectId, status: task_status.inProgress },
+  });
 
-    inProgressCount = await prisma.tasks.count({
-      where: { projectId, status: task_status.inProgress },
-    });
-
-    doneCount = await prisma.tasks.count({
-      where: { projectId, status: task_status.done },
-    });
-  } catch {
-    // ignore if table doesn't exist
-  }
+  const doneCount = await prisma.tasks.count({
+    where: { projectId, status: task_status.done },
+  });
 
   return {
     data: {
@@ -73,17 +68,23 @@ export const getProject = async (projectId: number) => {
       todoCount,
       inProgressCount,
       doneCount,
-      creatorId: project.creatorId, // 내부 용도
+      creatorId: project.creatorId,
     },
   };
 };
 
-// 프로젝트 수정
-export const updateProject = (params: UpdateProjectParams) => {
-  const { projectId, name, description } = params;
-
+export const updateProject = async ({ projectId, name, description }: UpdateProjectParams) => {
   return prisma.projects.update({
     where: { id: projectId },
-    data: { name, description },
+    data: {
+      ...(name !== undefined && { name }),
+      ...(description !== undefined && { description }),
+    },
+  });
+};
+
+export const deleteProject = async (projectId: number) => {
+  return prisma.projects.delete({
+    where: { id: projectId },
   });
 };
