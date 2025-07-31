@@ -1,18 +1,30 @@
 import express from 'express';
-import projectRouter from './routes/project-route';
-import dotenv from 'dotenv';
-import { errorHandler } from './utils/error-handler';
-
-dotenv.config();
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import routes from './routes/index-route';
+import passport from 'passport';
+import subtaskRouter from './routes/subtask-route';
+import { errorHandler } from './middlewares/error-handler';
 
 const app = express();
-app.use(express.json());
-app.use('/projects', projectRouter);
 
+// 미들웨어 설정
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  })
+);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(passport.initialize());
+
+// 라우터 등록
+app.use('/', routes);
+app.use('/subtasks', subtaskRouter);
+
+// 에러 미들웨어 등록
 app.use(errorHandler);
 
-const port = process.env.PORT;
-
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+export default app;
