@@ -29,6 +29,8 @@ export const updateMyInfoController: RequestHandler = async (req, res, next) => 
         return handleError(next, err, err.message, statusCode.badRequest);
       if (err.message === '현재 비밀번호가 일치하지 않습니다.')
         return handleError(next, err, err.message, statusCode.unauthorized);
+      if (err.message === 'Google 로그인 사용자는 비밀번호를 변경할 수 없습니다.')
+        return handleError(next, err, err.message, statusCode.badRequest);
       if (err.message === errorMsg.userNotFound)
         return handleError(next, err, err.message, statusCode.notFound);
     }

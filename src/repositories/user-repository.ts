@@ -1,4 +1,4 @@
-import prisma from '../lib/client';
+import prisma from '../config/db';
 import { Users, Projects, Tasks, Prisma } from '@prisma/client';
 
 class UserRepository {

@@ -44,7 +44,14 @@ class UserService {
 
     let hashedPassword: string | undefined;
 
-    if (data.newPassword) {
+    // 💡 provider가 google일 경우 비밀번호 변경 차단
+    if (user.provider === 'google') {
+      if (data.newPassword || data.currentPassword) {
+        throw new Error('Google 로그인 사용자는 비밀번호를 변경할 수 없습니다.');
+      }
+    }
+
+    if (user.provider === 'email' && data.newPassword) {
       if (!data.currentPassword) throw new Error('현재 비밀번호가 필요합니다.');
       const isMatch = await bcrypt.compare(data.currentPassword, user.password);
       if (!isMatch) throw new Error('현재 비밀번호가 일치하지 않습니다.');
