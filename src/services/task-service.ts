@@ -7,6 +7,7 @@ import {
   UpdateTaskRequest,
 } from '../utils/dtos/task-dto';
 import { errorMsg, statusCode } from '../middlewares/error-handler';
+import { CreateCommentRequest, CreateCommentResponse } from '../utils/dtos/comment-dto';
 
 export const taskService = {
   async createTasks(
@@ -315,5 +316,46 @@ export const taskService = {
     }
 
     await taskRepository.deleteTask(taskId);
+  },
+
+  async createComment(
+    taskId: number,
+    userId: number,
+    dto: CreateCommentRequest
+  ): Promise<CreateCommentResponse> {
+    // 1. task 유효성 검사
+    const task = await taskRepository.getTaskById(taskId);
+    if (!task) {
+      throw {
+        status: statusCode.notFound,
+        message: errorMsg.dataNotFound,
+      };
+    }
+
+    // 2. 프로젝트 멤버 권한 확인 (Invitations에서 status: accepted 여부 검사)
+    const isMember = await taskRepository.checkIfAcceptedMember(task.projectId, userId);
+    if (!isMember) {
+      throw {
+        status: statusCode.forbidden,
+        message: errorMsg.accessDenied,
+      };
+    }
+
+    // 3. 댓글 생성
+    const comment = await taskRepository.createComment(taskId, userId, dto);
+
+    return {
+      id: comment.id,
+      content: comment.content,
+      taskId: comment.taskId,
+      author: {
+        id: comment.author.id,
+        name: comment.author.name,
+        email: comment.author.email,
+        profileImage: comment.author.profileImage,
+      },
+      createdAt: comment.createdAt,
+      updatedAt: comment.updatedAt,
+    };
   },
 };
