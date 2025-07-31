@@ -1,5 +1,12 @@
 import { task_status } from '@prisma/client';
-import { Tags, TaskAttachment, TaskAttachmentInput, TaskOrder, TaskOrderBy, Assignee } from '../../types/task-type';
+import {
+  Tags,
+  TaskAttachment,
+  TaskAttachmentInput,
+  TaskOrder,
+  TaskOrderBy,
+  Assignee,
+} from '../../types/task-type';
 
 export interface CreateTaskRequest {
   title: string;
@@ -45,7 +52,6 @@ export interface CreateTaskResponse {
   updatedAt: Date;
 }
 
-
 export interface GetAllTaskQuery {
   projectId: number;
   userId: number;
@@ -86,4 +92,21 @@ export interface GetAllTasksResponse {
   assignee: Assignee;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface UpdateTaskRequest extends CreateTaskRequest {
+  assigneeId: number;
+}
+
+export interface UpdateTaskInput {
+  taskId: number;
+  userId?: number;
+  title?: string;
+  description?: string;
+  startedAt?: Date;
+  dueDate?: Date;
+  status?: task_status;
+  assigneeId?: number;
+  tags?: string[];
+  attachments?: TaskAttachmentInput[];
 }
