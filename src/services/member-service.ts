@@ -8,7 +8,6 @@ import { statusCode, errorMsg } from '../middlewares/error-handler';
 import { memberRepository } from '../repositories/member-repository';
 
 export const memberService = {
- 
   async getProjectMembers(
     projectId: number,
     query: GetProjectMembersQuery,

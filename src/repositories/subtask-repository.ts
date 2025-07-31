@@ -1,5 +1,5 @@
 import db from '../config/db';
-import { Prisma } from '../generated/prisma';
+import { Prisma } from '@prisma/client';
 // taskId 필요
 // createSubtaks
 // findManyWithfilter

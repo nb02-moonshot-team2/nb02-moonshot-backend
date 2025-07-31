@@ -1,7 +1,7 @@
 import { subtaskRepository } from '../repositories/subtask-repository';
-import { Prisma } from '../generated/prisma';
-import { CustomError } from '../middlewares/custom-error';
+import { Prisma } from '@prisma/client';
 import { SubTaskData } from '../types/subtask-type';
+import { statusCode, errorMsg } from '../middlewares/error-handler';
 export const subtaskService = {
   createSubtask: async (userId: number, taskId: number, body: { description: string }) => {
     /* taskrepo에서 검증
@@ -31,7 +31,7 @@ export const subtaskService = {
     }
     const filtered = data.filter((subtask) => subtask.userId === userId);
     if (filtered.length === 0) {
-      throw new CustomError(403, '프로젝트 멤버가 아닙니다');
+      throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
     }
     const transformed = filtered.map((subtask) => ({
       id: subtask.id,
@@ -57,8 +57,9 @@ export const subtaskService = {
 
   updateSubtask: async (userId: number, subTaskId: number, data: Prisma.SubtasksUpdateInput) => {
     const subtask = await subtaskRepository.findBySubTaskId(subTaskId);
-    if (!subtask) throw new CustomError(404, 'NOT_FOUND');
-    if (subtask.userId !== userId) throw new CustomError(403, '프로젝트 멤버가 아닙니다');
+    if (!subtask) throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
+    if (subtask.userId !== userId)
+      throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
     const updated = await subtaskRepository.update(subTaskId, data);
     return {
       id: updated.id,
@@ -72,8 +73,9 @@ export const subtaskService = {
 
   deleteSubtask: async (userId: number, subTaskId: number) => {
     const subtask = await subtaskRepository.findBySubTaskId(subTaskId);
-    if (!subtask) throw new CustomError(404, 'NOT_FOUND');
-    if (subtask.userId !== userId) throw new CustomError(403, '프로젝트 멤버가 아닙니다');
+    if (!subtask) throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
+    if (subtask.userId !== userId)
+      throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
     return await subtaskRepository.delete(subTaskId);
   },
 };

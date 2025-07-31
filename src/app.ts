@@ -2,12 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import routes from './routes/index-route';
-import dotenv from 'dotenv';
 import passport from 'passport';
 import subtaskRouter from './routes/subtask-route';
 import { errorHandler } from './middlewares/error-handler';
-dotenv.config();
-
 
 const app = express();
 
