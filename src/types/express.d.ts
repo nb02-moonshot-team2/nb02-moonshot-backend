@@ -5,7 +5,7 @@ declare global {
       email: string;
       nickname: string;
       password: string;
-      image: string | null;
+      profileImage: string | null;
       refreshToken: string | null;
       createdAt: Date;
       updatedAt: Date;
