@@ -1,18 +1,24 @@
-import { subtaskRepository } from '../repositories/subtask-repository';
 import { Prisma } from '@prisma/client';
-import { SubTaskData } from '../types/subtask-type';
+import { SubTaskData, CreateSubtask } from '../types/subtask-type';
 import { statusCode, errorMsg } from '../middlewares/error-handler';
+import { taskRepository } from '../repositories/task-repository';
+import { memberRepository } from '../repositories/member-repository';
+import { subtaskRepository } from '../repositories/subtask-repository';
 export const subtaskService = {
-  createSubtask: async (userId: number, taskId: number, body: { description: string }) => {
-    /* taskrepo에서 검증
+  // subtask 생성
+  createSubtask: async (userId: number, taskId: number, body: CreateSubtask) => {
+    //  taskrepo에서 검증
 
     const task = await taskRepository.findByTaskId(taskId);
-    if(!task) throw new CustomError(404,"NOT_FOUND")
-    if(task.userId !== userId) throw new CustomError(403,"UNAUTHORIZED")
+    if (!task) throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
 
-    */
-    const { description } = body;
-    const createSubtask = await subtaskRepository.create({ userId, taskId, description });
+    // project 멤버인지 검증
+
+    const isProjectMember = await memberRepository.isProjectMember(task.projectId, userId);
+    if (!isProjectMember) throw { status: statusCode.forbidden, message: errorMsg.accessDenied };
+
+    const { title } = body;
+    const createSubtask = await subtaskRepository.create({ userId, taskId, description: title });
     return {
       id: createSubtask.id,
       title: createSubtask.description,
@@ -23,17 +29,24 @@ export const subtaskService = {
     };
   },
 
+  // subtaks 목록 조회
+
   getListSubtasks: async (userId: number, taskId: number, page: number, limit: number) => {
+    // task repo에서 검증
+
+    const task = await taskRepository.findByTaskId(taskId);
+    if (!task) throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
+
+    // project 멤버인지 검증
+
+    const isProjectMember = await memberRepository.isProjectMember(task.projectId, userId);
+    if (!isProjectMember) throw { status: statusCode.forbidden, message: errorMsg.accessDenied };
     const { data, total }: { data: SubTaskData[]; total: number } =
       await subtaskRepository.findManyByTaskId(taskId, page, limit);
     if (total === 0) {
       return { data: [], total: 0 };
     }
-    const filtered = data.filter((subtask) => subtask.userId === userId);
-    if (filtered.length === 0) {
-      throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
-    }
-    const transformed = filtered.map((subtask) => ({
+    const transformed = data.map((subtask) => ({
       id: subtask.id,
       title: subtask.description,
       taskId: subtask.taskId,
@@ -44,22 +57,40 @@ export const subtaskService = {
     return { data: transformed, total };
   },
 
-  /* 
-  API명세서에는 있지만 프론트에서 기능 구현되지 않음
+  // subtask 하위 할 일 조회 API 명세서(/subtasks/:subtaskId)에는 있지만 프론트에서 기능 구현되지 않음
 
   getDetail: async (userId: number, subTaskId: number) => {
-    const subtask = await subtaskRepository.findByTaskId(subTaskId);
-    if (!subtask) throw new CustomError(404, 'NOT_FOUND');
-    if (subtask.userId !== userId) throw new CustomError(403, "프로젝트 멤버가 아닙니다");
-    return subtask;
+    const subtask = await subtaskRepository.findBySubTaskId(subTaskId);
+    if (!subtask) throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
+
+    const task = await taskRepository.findByTaskId(subtask.taskId);
+    if (!task) throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
+
+    const isProjectMember = await memberRepository.isProjectMember(task.projectId, userId);
+    if (!isProjectMember) throw { status: statusCode.forbidden, message: errorMsg.accessDenied };
+
+    return {
+      id: subtask.id,
+      title: subtask.description,
+      taskId: subtask.taskId,
+      status: subtask.isDone ? 'done' : 'todo',
+      createdAt: subtask.createdAt,
+      updatedAt: subtask.updatedAt,
+    };
   },
-  */
+
+  // subtask 수정
 
   updateSubtask: async (userId: number, subTaskId: number, data: Prisma.SubtasksUpdateInput) => {
     const subtask = await subtaskRepository.findBySubTaskId(subTaskId);
     if (!subtask) throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
-    if (subtask.userId !== userId)
-      throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
+
+    const task = await taskRepository.findByTaskId(subtask.taskId);
+    if (!task) throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
+
+    const isProjectMember = await memberRepository.isProjectMember(task.projectId, userId);
+    if (!isProjectMember) throw { status: statusCode.forbidden, message: errorMsg.accessDenied };
+
     const updated = await subtaskRepository.update(subTaskId, data);
     return {
       id: updated.id,
@@ -71,11 +102,17 @@ export const subtaskService = {
     };
   },
 
+  // subtaks 삭제
+
   deleteSubtask: async (userId: number, subTaskId: number) => {
     const subtask = await subtaskRepository.findBySubTaskId(subTaskId);
     if (!subtask) throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
-    if (subtask.userId !== userId)
-      throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
+
+    const task = await taskRepository.findByTaskId(subtask.taskId);
+    if (!task) throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
+
+    const isProjectMember = await memberRepository.isProjectMember(task.projectId, userId);
+    if (!isProjectMember) throw { status: statusCode.forbidden, message: errorMsg.accessDenied };
     return await subtaskRepository.delete(subTaskId);
   },
 };

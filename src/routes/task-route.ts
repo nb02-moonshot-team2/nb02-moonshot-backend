@@ -8,6 +8,7 @@ import {
   deleteTaskController,
   createComment,
 } from '../controllers/task-controller';
+import { createSubtask, getListSubtasks } from '../controllers/subtask-controller';
 
 const router = Router();
 
@@ -51,5 +52,18 @@ router.delete(
   '/tasks/:taskId',
   passport.authenticate('access-token', { session: false }),
   deleteTaskController as RequestHandler
+);
+
+// subtask 생성, subtask 목록 조회 추가
+router.post(
+  '/tasks/:taskId/subtasks',
+  passport.authenticate('access-token', { session: false }),
+  createSubtask
+);
+
+router.get(
+  '/tasks/:taskId/subtasks',
+  passport.authenticate('access-token', { session: false }),
+  getListSubtasks
 );
 export default router;
