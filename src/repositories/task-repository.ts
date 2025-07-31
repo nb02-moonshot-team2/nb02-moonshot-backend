@@ -1,6 +1,7 @@
 import db from '../config/db';
 import { Prisma } from '@prisma/client';
 import { CreateTaskInput, GetAllTaskfilter, UpdateTaskInput } from '../utils/dtos/task-dto';
+import { CreateCommentRequest } from '../utils/dtos/comment-dto';
 
 export const taskRepository = {
   async findProjectById(projectId: number) {
@@ -75,9 +76,15 @@ export const taskRepository = {
   async getAllTasks(filters: GetAllTaskfilter) {
     const where: Prisma.TasksWhereInput = {
       projectId: filters.projectId,
-      status: filters.status,
-      userId: filters.assignee,
     };
+
+    if (filters.assignee) {
+      where.userId = filters.assignee;
+    }
+
+    if (filters.status) {
+      where.status = filters.status;
+    }
 
     if (filters.keyword && filters.keyword.trim() !== '') {
       where.title = {
@@ -206,5 +213,30 @@ export const taskRepository = {
     return await db.tasks.delete({
       where: { id: taskId },
     });
+  },
+
+  async createComment(taskId: number, userId: number, dto: CreateCommentRequest) {
+    return await db.comments.create({
+      data: {
+        content: dto.content,
+        taskId,
+        authorId: userId,
+      },
+      include: {
+        author: true,
+      },
+    });
+  },
+
+  async checkIfAcceptedMember(projectId: number, userId: number): Promise<boolean> {
+    const invitation = await db.invitations.findFirst({
+      where: {
+        projectId,
+        inviteeId: userId,
+        status: 'accepted',
+      },
+    });
+
+    return !!invitation;
   },
 };
