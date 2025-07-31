@@ -1,5 +1,5 @@
 import { subtaskRepository } from '../repositories/subtask-repository';
-import { Prisma } from '../generated/prisma';
+import { Prisma } from '@prisma/client';
 import { CustomError } from '../middlewares/custom-error';
 import { SubTaskData } from '../types/subtask-type';
 export const subtaskService = {
