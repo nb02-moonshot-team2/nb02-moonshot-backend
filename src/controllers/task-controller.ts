@@ -4,6 +4,8 @@ import { CreateTaskRequest, GetAllTaskQuery, UpdateTaskRequest } from '../utils/
 import { TaskOrder, TaskOrderBy } from '../types/task-type';
 import { handleError, errorMsg, statusCode } from '../middlewares/error-handler';
 import { task_status } from '@prisma/client';
+import { AuthenticateRequest } from '../utils/dtos/member-dto';
+import { CreateCommentRequest } from '../utils/dtos/comment-dto';
 
 export const createTaskController = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -120,5 +122,32 @@ export const deleteTaskController = async (req: Request, res: Response, next: Ne
     res.status(204).send();
   } catch (err) {
     next(err);
+  }
+};
+
+// 댓글 추가
+export const createComment = async (
+  req: AuthenticateRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const taskId = parseInt(req.params.taskId, 10);
+    const userId = req.user?.id;
+    const { content } = req.body as CreateCommentRequest;
+
+    if (!taskId || !content) {
+      return handleError(next, Error, errorMsg.wrongRequestFormat, statusCode.badRequest);
+    }
+
+    if (!userId) {
+      return handleError(next, Error, errorMsg.loginRequired, statusCode.unauthorized);
+    }
+
+    const newComment = await taskService.createComment(taskId, userId, { content });
+
+    res.status(200).json(newComment);
+  } catch (error) {
+    next(error);
   }
 };

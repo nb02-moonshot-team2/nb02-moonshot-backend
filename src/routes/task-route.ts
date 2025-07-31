@@ -6,6 +6,7 @@ import {
   getTaskByIdController,
   updateTaskController,
   deleteTaskController,
+  createComment,
 } from '../controllers/task-controller';
 
 const router = Router();
@@ -15,6 +16,13 @@ router.post(
   '/projects/:projectId/tasks',
   passport.authenticate('access-token', { session: false }),
   createTaskController as RequestHandler
+);
+
+// 할 일에 댓글 추가
+router.post(
+  '/tasks/:taskId/comments',
+  passport.authenticate('access-token', { session: false }),
+  createComment
 );
 
 // 할 일 전체 목록 조회
