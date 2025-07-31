@@ -97,6 +97,9 @@ export default defineConfig([
       ],
     },
   },
+  {
+    ignores: ['/src/middlewares/error-handler.ts/'],
+  },
   eslintConfigPrettier,
   eslintPluginPrettierRecommended,
 ]);

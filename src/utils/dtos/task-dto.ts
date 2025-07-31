@@ -57,8 +57,8 @@ export interface GetAllTaskQuery {
   userId: number;
   page: number;
   limit: number;
-  status: task_status;
-  assignee: number;
+  status?: task_status;
+  assignee?: number;
   keyword?: string;
   order: TaskOrder;
   orderBy: TaskOrderBy;
@@ -67,8 +67,8 @@ export interface GetAllTaskQuery {
 export interface GetAllTaskfilter {
   projectId: number;
   userId: number;
-  status: task_status;
-  assignee: number;
+  status?: task_status;
+  assignee?: number;
   keyword?: string;
   order: TaskOrder;
   orderBy: TaskOrderBy;

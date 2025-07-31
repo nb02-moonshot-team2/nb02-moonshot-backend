@@ -26,8 +26,7 @@ export enum TaskOrder {
 }
 
 export enum TaskOrderBy {
-  createdAt = 'created_at',
+  createdAt = 'createdAt',
   name = 'name',
-  endDate = 'end_date',
+  endDate = 'endDate',
 }
-

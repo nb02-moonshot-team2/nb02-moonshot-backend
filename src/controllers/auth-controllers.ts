@@ -7,6 +7,7 @@ class AuthController {
 
   register: express.RequestHandler = async (req, res, next) => {
     try {
+      // 구글 로그인과 구분하기 위해 provider를 email로 설정
       req.body.provider = 'email' as Users['provider'];
       await this.authService.register(req, res, next);
     } catch (err) {
@@ -25,6 +26,14 @@ class AuthController {
   refresh: express.RequestHandler = async (req, res, next) => {
     try {
       await this.authService.refresh(req, res, next);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  googleCallback: express.RequestHandler = async (req, res, next) => {
+    try {
+      await this.authService.googleCallback(req, res, next);
     } catch (err) {
       next(err);
     }
