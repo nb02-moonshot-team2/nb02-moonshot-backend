@@ -30,4 +30,3 @@ export enum TaskOrderBy {
   name = 'name',
   endDate = 'end_date',
 }
-

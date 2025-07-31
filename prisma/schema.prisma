@@ -131,13 +131,8 @@ model Subtasks {
   isDone      Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-<<<<<<< HEAD
-  user        Users?   @relation(fields: [usersId], references: [id], onDelete: Cascade)
-  usersId     Int?
-=======
   user        Users?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int?
->>>>>>> dev
 }
 
 model Comments {
