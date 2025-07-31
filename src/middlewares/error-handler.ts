@@ -34,6 +34,7 @@ export const errorMsg = {
   wrongRequestFormat: '잘못된 요청 형식 입니다.',
   accessDenied: '접근 권한이 없습니다.',
   dataNotFound: '해당 데이터를 찾을 수 없습니다.',
+  invalidTaskId: '유효한 할 일 ID가 아닙니다.',
 } as const;
 
 export const handleError = (
