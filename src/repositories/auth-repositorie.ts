@@ -1,6 +1,4 @@
-import express from 'express';
 import { PrismaClient, Users, Tokens } from '@prisma/client';
-import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -43,32 +41,25 @@ class AuthRepository {
   };
 
   deleteRefreshToken = async (userId: Users['id']) => {
-    try {
-      await prisma.tokens.deleteMany({
-        where: {
-          userId,
-        },
-      });
-    } catch (err) {
-      throw err;
-    }
+    await prisma.tokens.deleteMany({
+      where: {
+        userId,
+      },
+    });
   };
+
   saveRefreshToken = async (
     userId: Users['id'],
     refreshToken: Tokens['refreshToken'],
     expiresAt: Tokens['expiresAt']
   ) => {
-    try {
-      await prisma.tokens.create({
-        data: {
-          refreshToken,
-          expiresAt,
-          userId,
-        },
-      });
-    } catch (err) {
-      throw err;
-    }
+    await prisma.tokens.create({
+      data: {
+        refreshToken,
+        expiresAt,
+        userId,
+      },
+    });
   };
 }
 

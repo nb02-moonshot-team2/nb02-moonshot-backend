@@ -1,5 +1,5 @@
 import { Router, RequestHandler } from 'express';
-import passport from '../utils/jwtStrategy';
+import passport from '../utils/passport/index';
 import {
   getProjectMembers,
   removeProjectMember,
