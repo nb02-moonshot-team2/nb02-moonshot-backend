@@ -76,9 +76,15 @@ export const taskRepository = {
   async getAllTasks(filters: GetAllTaskfilter) {
     const where: Prisma.TasksWhereInput = {
       projectId: filters.projectId,
-      status: filters.status,
-      userId: filters.assignee,
     };
+
+    if (filters.assignee) {
+      where.userId = filters.assignee;
+    }
+
+    if (filters.status) {
+      where.status = filters.status;
+    }
 
     if (filters.keyword && filters.keyword.trim() !== '') {
       where.title = {
