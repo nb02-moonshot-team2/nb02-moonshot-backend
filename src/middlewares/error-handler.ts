@@ -27,6 +27,7 @@ export const errorMsg = {
   userNotFound: '존재하지 않는 유저입니다',
   getUserFailed: '사용자 정보 조회 중 오류가 발생했습니다.',
   updateUserFailed: '사용자 정보 수정 중 오류가 발생했습니다.',
+  noPermissionToUpdateUser: '사용자 정보 수정 권한이 없습니다.',
 
   // 공통
   serverError: '서버 내부 오류가 발생했습니다.',
