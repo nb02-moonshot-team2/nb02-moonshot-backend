@@ -2,122 +2,124 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  // 1. Projects
-  await prisma.projects.createMany({
-    data: [
-      { id: 1, name: 'Project Apollo', description: 'AI 연구 프로젝트', creatorId: 1 },
-      { id: 2, name: 'Project Gemini', description: '웹 개발 프로젝트', creatorId: 2 },
-      { id: 3, name: 'Project Mercury', description: '모바일 앱 프로젝트', creatorId: 3 },
-    ],
+  // 1. 프로젝트 생성
+  await prisma.projects.create({
+    data: {
+      name: '댓글 테스트용 프로젝트',
+      description: '댓글 API 테스트를 위한 기본 프로젝트입니다.',
+      creatorId: 1, // 이미 회원가입한 유저 ID
+    },
   });
 
-  // 2. Project_members (creator 포함 + 초대 수락한 유저만)
+  // 2. 태스크 생성
+  await prisma.tasks.create({
+    data: {
+      projectId: 1, // 위에서 생성한 프로젝트 ID
+      title: '댓글 테스트용 태스크',
+      description: '댓글 생성을 테스트하는 데 사용할 작업입니다.',
+      status: 'todo',
+      userId: 1, // 이미 가입된 유저 ID
+      startedAt: new Date(),
+      dueDate: new Date(new Date().setDate(new Date().getDate() + 7)),
+    },
+  });
+
+  // 3. 프로젝트 멤버 등록 (생성자 + 수락한 유저들)
   await prisma.project_members.createMany({
     data: [
-      { id: 1, projectId: 1, userId: 1 },
-      { id: 2, projectId: 1, userId: 4 },
-      { id: 3, projectId: 1, userId: 5 },
-      { id: 4, projectId: 1, userId: 6 },
-      { id: 5, projectId: 2, userId: 2 },
-      { id: 6, projectId: 2, userId: 7 },
-      { id: 7, projectId: 2, userId: 8 },
-      { id: 8, projectId: 3, userId: 3 },
-      { id: 9, projectId: 3, userId: 9 },
+      { projectId: 1, userId: 1 }, // creator
+      { projectId: 1, userId: 2 },
+      { projectId: 1, userId: 3 },
+      { projectId: 1, userId: 4 },
+      { projectId: 1, userId: 5 },
     ],
   });
 
-  // 3. Invitations (accepted/pending 포함, token 추가됨)
+  // 4. 초대 기록 (userId 2~10)
   await prisma.invitations.createMany({
     data: [
-      // Project 1
       {
-        id: 1,
+        projectId: 1,
+        invitorId: 1,
+        inviteeId: 2,
+        invitedAt: new Date(),
+        acceptedAt: new Date(),
+        status: 'accepted',
+        token: 'token-1-2',
+      },
+      {
+        projectId: 1,
+        invitorId: 1,
+        inviteeId: 3,
+        invitedAt: new Date(),
+        acceptedAt: new Date(),
+        status: 'accepted',
+        token: 'token-1-3',
+      },
+      {
         projectId: 1,
         invitorId: 1,
         inviteeId: 4,
-        status: 'accepted',
+        invitedAt: new Date(),
         acceptedAt: new Date(),
+        status: 'accepted',
         token: 'token-1-4',
       },
       {
-        id: 2,
         projectId: 1,
         invitorId: 1,
         inviteeId: 5,
-        status: 'accepted',
+        invitedAt: new Date(),
         acceptedAt: new Date(),
+        status: 'accepted',
         token: 'token-1-5',
       },
       {
-        id: 3,
         projectId: 1,
         invitorId: 1,
         inviteeId: 6,
-        status: 'accepted',
-        acceptedAt: new Date(),
+        invitedAt: new Date(),
+        status: 'pending',
         token: 'token-1-6',
       },
       {
-        id: 4,
         projectId: 1,
         invitorId: 1,
         inviteeId: 7,
+        invitedAt: new Date(),
         status: 'pending',
         token: 'token-1-7',
       },
-
-      // Project 2
       {
-        id: 5,
-        projectId: 2,
-        invitorId: 2,
-        inviteeId: 7,
-        status: 'accepted',
-        acceptedAt: new Date(),
-        token: 'token-2-7',
-      },
-      {
-        id: 6,
-        projectId: 2,
-        invitorId: 2,
+        projectId: 1,
+        invitorId: 1,
         inviteeId: 8,
-        status: 'accepted',
-        acceptedAt: new Date(),
-        token: 'token-2-8',
-      },
-      {
-        id: 7,
-        projectId: 2,
-        invitorId: 2,
-        inviteeId: 9,
+        invitedAt: new Date(),
         status: 'pending',
-        token: 'token-2-9',
+        token: 'token-1-8',
       },
-
-      // Project 3
       {
-        id: 8,
-        projectId: 3,
-        invitorId: 3,
+        projectId: 1,
+        invitorId: 1,
         inviteeId: 9,
-        status: 'accepted',
-        acceptedAt: new Date(),
-        token: 'token-3-9',
+        invitedAt: new Date(),
+        status: 'pending',
+        token: 'token-1-9',
       },
       {
-        id: 9,
-        projectId: 3,
-        invitorId: 3,
+        projectId: 1,
+        invitorId: 1,
         inviteeId: 10,
+        invitedAt: new Date(),
         status: 'pending',
-        token: 'token-3-10',
+        token: 'token-1-10',
       },
     ],
   });
 }
 
 main()
-  .then(() => console.log('🌱 Seed data inserted successfully!'))
+  .then(() => console.log('🧪 댓글 테스트용 프로젝트 & 태스크 생성 완료!'))
   .catch((e) => {
     console.error(e);
     process.exit(1);
