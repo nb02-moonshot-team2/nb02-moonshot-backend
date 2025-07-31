@@ -2,8 +2,12 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import routes from './routes/index-route';
+import dotenv from 'dotenv';
+import passport from 'passport';
 import subtaskRouter from './routes/subtask-route';
 import { errorHandler } from './middlewares/error-handler';
+dotenv.config();
+
 
 const app = express();
 
@@ -17,6 +21,8 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(passport.initialize());
 
 // 라우터 등록
 app.use('/', routes);
