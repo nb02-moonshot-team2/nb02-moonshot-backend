@@ -8,7 +8,7 @@ const router = express.Router();
  * @swagger
  * /subtasks/{subtaskId}:
  *   get:
- *     summary: 특정 서브태스크 상세 조회
+ *     summary: 하위 할 일 조회
  *     tags:
  *       - Subtasks
  *     parameters:
@@ -17,36 +17,33 @@ const router = express.Router();
  *         required: true
  *         schema:
  *           type: string
- *         description: 조회할 서브태스크 ID
+ *         description: 조회할 하위 할 일 ID
  *     security:
  *       - access-token: []
  *     responses:
- *       200:
- *         description: 서브태스크 상세 정보 반환
+ *       '200':
+ *         description: 하위 할 일 상세 정보 반환
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                   example: "123"
- *                 title:
- *                   type: string
- *                   example: "서브태스크 제목"
- *                 completed:
- *                   type: boolean
- *                   example: false
- *       401:
- *         description: 인증 실패
+ *               $ref: '#/components/schemas/subtaskResponse'
+ *       '400':
+ *         description: 잘못된 요청 형식
+ *       '401':
+ *         description: 로그인이 필요합니다.
+ *       '403':
+ *         description: 프로젝트 멤버가 아닙니다.
+ *       '404':
+ *         description: 해당 하위 할 일을 찾을 수 없습니다.
  */
+
 router.get('/:subtaskId', passport.authenticate('access-token', { session: false }), getDetail);
 
 /**
  * @swagger
  * /subtasks/{subtaskId}:
  *   patch:
- *     summary: 특정 서브태스크 수정
+ *     summary: 하위 할 일 수정
  *     tags:
  *       - Subtasks
  *     parameters:
@@ -55,7 +52,7 @@ router.get('/:subtaskId', passport.authenticate('access-token', { session: false
  *         required: true
  *         schema:
  *           type: string
- *         description: 수정할 서브태스크 ID
+ *         description: 조회할 하위 할 일 ID
  *     security:
  *       - access-token: []
  *     requestBody:
@@ -63,22 +60,22 @@ router.get('/:subtaskId', passport.authenticate('access-token', { session: false
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               title:
- *                 type: string
- *                 example: "변경된 제목"
- *               completed:
- *                 type: boolean
- *                 example: true
+ *             $ref: '#/components/schemas/subtaskUpdateOrCreateRequest'
  *     responses:
- *       200:
- *         description: 수정 성공
- *       400:
- *         description: 잘못된 요청
- *       401:
- *         description: 인증 실패
+ *       '200':
+ *         description: 하위 할 일 수정
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/subtaskResponse'
+ *       '400':
+ *         description: 잘못된 요청 형식
+ *       '401':
+ *         description: 로그인이 필요합니다.
+ *       '403':
+ *         description: 프로젝트 멤버가 아닙니다.
  */
+
 router.patch(
   '/:subtaskId',
   passport.authenticate('access-token', { session: false }),
@@ -102,11 +99,18 @@ router.patch(
  *     security:
  *       - access-token: []
  *     responses:
- *       204:
+ *       '204':
  *         description: 삭제 성공 (응답 본문 없음)
- *       401:
- *         description: 인증 실패
+ *       '400':
+ *         description: 잘못된 요청 형식
+ *       '401':
+ *         description: 로그인이 필요합니다
+ *       '403':
+ *         description: 프로젝트 멤버가 아닙니다
+ *       '404':
+ *         description: (없음)
  */
+
 router.delete(
   '/:subtaskId',
   passport.authenticate('access-token', { session: false }),
