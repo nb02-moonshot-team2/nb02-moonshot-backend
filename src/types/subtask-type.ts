@@ -1,8 +1,8 @@
-export type UpdatedSubtask = {
+export type UpdateSubtask = {
   title: string;
 };
 
-export type CreatedSubtask = {
+export type CreateSubtask = {
   title: string;
 };
 
