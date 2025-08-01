@@ -1,6 +1,6 @@
 // src/routes/user-route.ts
 import express from 'express';
-import passport from 'passport';
+import passport from '../utils/passport/index';
 import { body } from 'express-validator';
 import { validateRequest } from '../middlewares/validation';
 import {

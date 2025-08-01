@@ -7,7 +7,11 @@ export function generateTokens(userId: number) {
   const refreshToken = jwt.sign({ sub: userId }, process.env.JWT_REFRESH_TOKEN_SECRET as string, {
     expiresIn: '7d',
   });
-  return { accessToken, refreshToken };
+
+  return {
+    accessToken,
+    refreshToken,
+  };
 }
 
 export function verifyRefreshToken(token: string): jwt.JwtPayload | null | string {
