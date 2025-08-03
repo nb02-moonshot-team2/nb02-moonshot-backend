@@ -14,15 +14,11 @@ async function main() {
   // 2. Project_members (creator 포함 + 초대 수락한 유저만)
   await prisma.project_members.createMany({
     data: [
-      { id: 1, projectId: 1, userId: 1 },
-      { id: 2, projectId: 1, userId: 4 },
-      { id: 3, projectId: 1, userId: 5 },
-      { id: 4, projectId: 1, userId: 6 },
-      { id: 5, projectId: 2, userId: 2 },
-      { id: 6, projectId: 2, userId: 7 },
-      { id: 7, projectId: 2, userId: 8 },
-      { id: 8, projectId: 3, userId: 3 },
-      { id: 9, projectId: 3, userId: 9 },
+      { projectId: 1, userId: 1 }, // creator
+      { projectId: 1, userId: 2 },
+      { projectId: 1, userId: 3 },
+      { projectId: 1, userId: 4 },
+      { projectId: 1, userId: 5 },
     ],
   });
 
@@ -31,30 +27,38 @@ async function main() {
     data: [
       // Project 1
       {
-        id: 1,
+        projectId: 1,
+        invitorId: 1,
+        inviteeId: 3,
+        invitedAt: new Date(),
+        acceptedAt: new Date(),
+        status: 'accepted',
+        token: 'token-1-3',
+      },
+      {
         projectId: 1,
         invitorId: 1,
         inviteeId: 4,
-        status: 'accepted',
+        invitedAt: new Date(),
         acceptedAt: new Date(),
+        status: 'accepted',
         token: 'token-1-4',
       },
       {
-        id: 2,
         projectId: 1,
         invitorId: 1,
         inviteeId: 5,
-        status: 'accepted',
+        invitedAt: new Date(),
         acceptedAt: new Date(),
+        status: 'accepted',
         token: 'token-1-5',
       },
       {
-        id: 3,
         projectId: 1,
         invitorId: 1,
         inviteeId: 6,
-        status: 'accepted',
-        acceptedAt: new Date(),
+        invitedAt: new Date(),
+        status: 'pending',
         token: 'token-1-6',
       },
       {
@@ -68,22 +72,12 @@ async function main() {
 
       // Project 2
       {
-        id: 5,
-        projectId: 2,
-        invitorId: 2,
-        inviteeId: 7,
-        status: 'accepted',
-        acceptedAt: new Date(),
-        token: 'token-2-7',
-      },
-      {
-        id: 6,
-        projectId: 2,
-        invitorId: 2,
+        projectId: 1,
+        invitorId: 1,
         inviteeId: 8,
-        status: 'accepted',
-        acceptedAt: new Date(),
-        token: 'token-2-8',
+        invitedAt: new Date(),
+        status: 'pending',
+        token: 'token-1-8',
       },
       {
         id: 7,
@@ -116,6 +110,7 @@ async function main() {
   });
 }
 
+// 시드 데이터 실행
 main()
   .then(() => console.log('🌱 Seed data inserted successfully!'))
   .catch((e) => {
