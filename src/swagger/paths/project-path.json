@@ -1,0 +1,180 @@
+{
+  "/projects": {
+    "post": {
+      "summary": "프로젝트 생성",
+      "tags": [
+        "Projects"
+      ],
+      "security": [
+        {
+          "access-token": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/projectCreateRequest"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "프로젝트 생성 성공",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/projectResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "잘못된 데이터 형식"
+        },
+        "401": {
+          "description": "로그인이 필요합니다"
+        }
+      }
+    }
+  },
+  "/projects/{projectId}": {
+    "get": {
+      "summary": "프로젝트 조회",
+      "tags": [
+        "Projects"
+      ],
+      "security": [
+        {
+          "access-token": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "projectId",
+          "in": "path",
+          "description": "조회할 프로젝트 ID",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "프로젝트 조회 성공",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/projectResponse"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "로그인이 필요합니다"
+        },
+        "403": {
+          "description": "프로젝트 멤버가 아닙니다"
+        },
+        "404": {
+          "description": "(없음)"
+        }
+      }
+    },
+    "patch": {
+      "summary": "프로젝트 수정",
+      "tags": [
+        "Projects"
+      ],
+      "security": [
+        {
+          "access-token": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "projectId",
+          "in": "path",
+          "description": "수정할 프로젝트 ID",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/projectCreateOrUpdateRequest"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "프로젝트 수정 성공",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/projectResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "잘못된 요청 데이터"
+        },
+        "401": {
+          "description": "로그인이 필요합니다"
+        },
+        "403": {
+          "description": "프로젝트 관리자가 아닙니다"
+        }
+      }
+    },
+    "delete": {
+      "summary": "프로젝트 삭제",
+      "tags": [
+        "Projects"
+      ],
+      "security": [
+        {
+          "access-token": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "projectId",
+          "in": "path",
+          "description": "삭제할 프로젝트 ID",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "204": {
+          "description": "프로젝트 삭제 성공 (응답 바디 없음)"
+        },
+        "400": {
+          "description": "잘못된 요청 데이터"
+        },
+        "401": {
+          "description": "로그인이 필요합니다"
+        },
+        "403": {
+          "description": "프로젝트 관리자가 아닙니다"
+        },
+        "404": {
+          "description": "(없음)"
+        }
+      }
+    }
+  }
+}
