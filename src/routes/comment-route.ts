@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import passport from '../utils/passport/index';
-import { getCommentById } from '../controllers/comment-controller';
+import { getCommentById, updateComment } from '../controllers/comment-controller';
 
 const router = Router();
 
@@ -11,4 +11,10 @@ router.get(
   getCommentById
 );
 
+// 댓글 수정
+router.patch(
+  '/:commentId',
+  passport.authenticate('access-token', { session: false }),
+  updateComment
+);
 export default router;

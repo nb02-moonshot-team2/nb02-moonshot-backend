@@ -20,4 +20,21 @@ export const commentRepository = {
 
     return Boolean(member);
   },
+
+  async updateComment(commentId: number, content: string) {
+    return await db.comments.update({
+      where: { id: commentId },
+      data: { content },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            profileImage: true,
+          },
+        },
+      },
+    });
+  },
 };

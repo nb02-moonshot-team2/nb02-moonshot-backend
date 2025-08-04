@@ -26,3 +26,28 @@ export const getCommentById = async (
     next(error);
   }
 };
+
+export const updateComment = async (
+  req: AuthenticateRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const commentId = Number(req.params.commentId);
+    const userId = req.user?.id;
+    const { content } = req.body;
+
+    if (isNaN(commentId)) {
+      return handleError(next, null, errorMsg.wrongRequestFormat, statusCode.badRequest);
+    }
+
+    if (!userId) {
+      return handleError(next, null, errorMsg.loginRequired, statusCode.unauthorized);
+    }
+
+    const updatedComment = await commentService.updateComment(commentId, userId, content);
+    res.status(200).json(updatedComment);
+  } catch (error) {
+    next(error);
+  }
+};
