@@ -1,0 +1,582 @@
+{
+  "/projects/{projectId}/tasks": {
+    "post": {
+      "summary": "프로젝트에 할 일 생성",
+      "tags": [
+        "Tasks"
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "projectId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "할 일이 생성될 프로젝트 ID"
+        }
+      ],
+      "security": [
+        {
+          "access-token": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/taskCreateRequest"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "할 일 생성 성공",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/taskResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "잘못된 요청 형식"
+        },
+        "401": {
+          "description": "로그인이 필요합니다"
+        },
+        "403": {
+          "description": "프로젝트 멤버가 아닙니다"
+        }
+      }
+    },
+    "get": {
+      "summary": "프로젝트의 할 일 목록 조회",
+      "tags": [
+        "Tasks"
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "projectId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "할 일 목록을 가져올 프로젝트 ID"
+        }
+      ],
+      "security": [
+        {
+          "access-token": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "할 일 목록 반환",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/taskListResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "잘못된 요청 형식"
+        },
+        "401": {
+          "description": "로그인이 필요합니다"
+        },
+        "403": {
+          "description": "프로젝트 멤버가 아닙니다"
+        }
+      }
+    }
+  },
+  "/tasks/{taskId}": {
+    "get": {
+      "summary": "할 일 조회",
+      "tags": [
+        "Tasks"
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "taskId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "조회할 할 일 ID"
+        }
+      ],
+      "security": [
+        {
+          "access-token": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "할 일 상세 정보 반환",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/taskResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "잘못된 요청 형식"
+        },
+        "401": {
+          "description": "로그인이 필요합니다"
+        },
+        "403": {
+          "description": "프로젝트 멤버가 아닙니다"
+        },
+        "404": {
+          "description": "할 일을 찾을 수 없음"
+        }
+      }
+    },
+    "patch": {
+      "summary": "할 일 수정",
+      "tags": [
+        "Tasks"
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "taskId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "수정할 할 일 ID"
+        }
+      ],
+      "security": [
+        {
+          "access-token": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/taskUpdateRequest"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "할 일 수정 성공",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/taskResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "잘못된 요청 형식"
+        },
+        "401": {
+          "description": "로그인이 필요합니다"
+        },
+        "403": {
+          "description": "프로젝트 멤버가 아닙니다"
+        },
+        "404": {
+          "description": "할 일을 찾을 수 없음"
+        }
+      }
+    },
+    "delete": {
+      "summary": "할 일 삭제",
+      "tags": [
+        "Tasks"
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "taskId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "삭제할 할 일 ID"
+        }
+      ],
+      "security": [
+        {
+          "access-token": []
+        }
+      ],
+      "responses": {
+        "204": {
+          "description": "할 일 삭제 성공 (응답 본문 없음)"
+        },
+        "400": {
+          "description": "잘못된 요청 형식"
+        },
+        "401": {
+          "description": "로그인이 필요합니다"
+        },
+        "403": {
+          "description": "프로젝트 멤버가 아닙니다"
+        },
+        "404": {
+          "description": "할 일을 찾을 수 없음"
+        }
+      }
+    }
+  },
+  "/tasks/{taskId}/comments": {
+    "post": {
+      "summary": "할 일에 댓글 추가",
+      "tags": [
+        "Comments"
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "taskId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "댓글을 추가할 할 일 ID"
+        }
+      ],
+      "security": [
+        {
+          "access-token": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/commentCreateOrUpdateRequest"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "댓글 생성 성공",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/commentResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "잘못된 요청 형식"
+        },
+        "401": {
+          "description": "로그인이 필요합니다"
+        },
+        "403": {
+          "description": "프로젝트 멤버가 아닙니다"
+        }
+      }
+    },
+    "get": {
+      "summary": "할 일의 댓글 목록 조회",
+      "tags": [
+        "Comments"
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "taskId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "댓글 목록을 조회할 할 일 ID"
+        }
+      ],
+      "security": [
+        {
+          "access-token": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "댓글 목록 조회 성공",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/commentListResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "잘못된 요청 형식"
+        },
+        "401": {
+          "description": "로그인이 필요합니다"
+        },
+        "403": {
+          "description": "프로젝트 멤버가 아닙니다"
+        }
+      }
+    }
+  },
+  "/comments/{commentId}": {
+    "get": {
+      "summary": "댓글 조회",
+      "tags": [
+        "Comments"
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "commentId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "조회할 댓글 ID"
+        }
+      ],
+      "security": [
+        {
+          "access-token": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "댓글 상세 정보 반환",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/commentResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "잘못된 요청 형식"
+        },
+        "401": {
+          "description": "로그인이 필요합니다"
+        },
+        "403": {
+          "description": "프로젝트 멤버가 아닙니다"
+        },
+        "404": {
+          "description": "댓글을 찾을 수 없습니다"
+        }
+      }
+    },
+    "patch": {
+      "summary": "댓글 수정",
+      "tags": [
+        "Comments"
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "commentId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "수정할 댓글 ID"
+        }
+      ],
+      "security": [
+        {
+          "access-token": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/commentCreateOrUpdateRequest"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "댓글 수정 성공",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/commentResponse"
+              }
+            }
+          }
+        },
+       "400": {
+          "description": "잘못된 요청 형식"
+        },
+        "401": {
+          "description": "로그인이 필요합니다"
+        },
+        "403": {
+          "description": "자신이 작성한 댓글만 수정할 수 있습니다"
+        },
+        "404": {
+          "description": "댓글을 찾을 수 없습니다"
+        }
+      }
+    },
+    "delete": {
+      "summary": "댓글 삭제",
+      "tags": [
+        "Comments"
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "commentId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "삭제할 댓글 ID"
+        }
+      ],
+      "security": [
+        {
+          "access-token": []
+        }
+      ],
+      "responses": {
+        "204": {
+          "description": "댓글 삭제 성공 (응답 본문 없음)"
+        },
+        "400": {
+          "description": "잘못된 요청 형식"
+        },
+        "401": {
+          "description": "로그인이 필요합니다"
+        },
+        "403": {
+          "description": "자신이 작성한 댓글만 삭제할 수 있습니다"
+        },
+        "404": {
+          "description": "댓글을 찾을 수 없습니다"
+        }
+      }
+    }
+  },
+  "/tasks/{taskId}/subtasks": {
+    "post": {
+      "summary": "하위 할 일 생성",
+      "tags": [
+        "Subtasks"
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "taskId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "하위 할 일이 속한 할 일 ID"
+        }
+      ],
+      "security": [
+        {
+          "access-token": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/subtaskUpdateOrCreateRequest"
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "하위 할 일 생성 성공",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/subtaskResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "잘못된 요청 형식"
+        },
+        "401": {
+          "description": "로그인이 필요합니다"
+        },
+        "403": {
+          "description": "프로젝트 멤버가 아닙니다"
+        }
+      }
+    },
+    "get": {
+      "summary": "하위 할 일 목록 조회",
+      "tags": [
+        "Subtasks"
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "taskId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "하위 할 일 목록을 조회할 할 일 ID"
+        }
+      ],
+      "security": [
+        {
+          "access-token": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "서브태스크 목록 반환",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/subtaskResponse"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "인증 실패"
+        },
+        "403": {
+          "description": "권한 없음"
+        }
+      }
+    }
+  }
+}
