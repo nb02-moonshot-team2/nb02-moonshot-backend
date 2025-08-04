@@ -1,0 +1,140 @@
+{
+  "/auth/register": {
+    "post": {
+      "summary": "회원 가입",
+      "tags": [
+        "Auth"
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/authRegisterRequest"
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "회원 가입 성공",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/authRegisterResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "잘못된 요청 데이터 또는 이미 가입한 이메일입니다."
+        }
+      }
+    }
+  },
+  "/auth/login": {
+    "post": {
+      "summary": "로그인",
+      "tags": [
+        "Auth"
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/loginRequest"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "로그인 성공",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/loginOrRefreshResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "잘못된 요청입니다"
+        },
+        "404": {
+          "description": "존재하지 않거나 비밀번호가 일치하지 않습니다"
+        }
+      }
+    }
+  },
+  "/auth/refresh": {
+    "post": {
+      "summary": "토큰 갱신",
+      "tags": [
+        "Auth"
+      ],
+      "responses": {
+        "200": {
+          "description": "토큰 갱신 성공",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/loginOrRefreshResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "잘못된 요청입니다"
+        },
+        "401": {
+          "description": "토큰 만료"
+        }
+      }
+    }
+  },
+   "/auth/google": {
+    "get": {
+      "summary": "구글 로그인 리다이렉트",
+      "tags": ["Auth"],
+      "responses": {
+        "307": {
+          "description": "Google 로그인 사이트로 리디렉션",
+          "headers": {
+            "Location": {
+              "description": "리디렉션할 Google 로그인 URL (redirect_uri 포함)",
+              "schema": {
+                "type": "string",
+                "format": "uri"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/auth/google/callback": {
+    "get": {
+      "summary": "Google OAuth 콜백 - 인증 성공 시 프론트엔드로 리다이렉트",
+      "tags": ["Auth"],
+      "responses": {
+        "307": {
+          "description": "인증 성공 후 프론트엔드 사이트로 리다이렉트",
+          "headers": {
+            "Location": {
+              "description": "리다이렉션할 프론트엔드 URL",
+              "schema": {
+                "type": "string",
+                "format": "uri"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "인증 실패"
+        }
+      }
+    }
+  }
+}
