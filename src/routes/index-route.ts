@@ -6,7 +6,7 @@ import projectRouter from './project-route';
 import taskRouter from './task-route';
 import subtaskRouter from './subtask-route';
 import commentRouter from './comment-route';
-
+import fileRouter from './file-upload-route';
 
 const router = Router();
 
@@ -16,8 +16,8 @@ router.use('/users', userRouter);
 router.use('/projects', projectRouter);
 router.use('/', taskRouter);
 router.use('/subtasks', subtaskRouter);
+router.use('/files', fileRouter);
 
 router.use('/comments', commentRouter);
-
 
 export default router;
