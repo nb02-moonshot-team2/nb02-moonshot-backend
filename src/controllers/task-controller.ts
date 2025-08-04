@@ -151,3 +151,30 @@ export const createComment = async (
     next(error);
   }
 };
+
+// 댓글 조회 (task 기준)
+export const getCommentsByTask = async (
+  req: AuthenticateRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const taskId = parseInt(req.params.taskId, 10);
+    const userId = req.user?.id;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+
+    if (!taskId) {
+      return handleError(next, Error, errorMsg.wrongRequestFormat, statusCode.badRequest);
+    }
+
+    if (!userId) {
+      return handleError(next, Error, errorMsg.loginRequired, statusCode.unauthorized);
+    }
+
+    const result = await taskService.getCommentsByTask(taskId, userId, page, limit);
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};

@@ -358,4 +358,42 @@ export const taskService = {
       updatedAt: comment.updatedAt,
     };
   },
+
+  async getCommentsByTask(taskId: number, userId: number, page = 1, limit = 10) {
+    const task = await taskRepository.getTaskById(taskId);
+    if (!task) {
+      throw {
+        status: statusCode.badRequest,
+        message: errorMsg.wrongRequestFormat,
+      };
+    }
+
+    const isMember = await taskRepository.checkIfAcceptedMember(task.projectId, userId);
+    if (!isMember) {
+      throw {
+        status: statusCode.forbidden,
+        message: errorMsg.accessDenied,
+      };
+    }
+
+    const skip = (page - 1) * limit;
+    const { comments, total } = await taskRepository.getCommentsByTask(taskId, skip, limit);
+
+    return {
+      data: comments.map((comments) => ({
+        id: comments.id,
+        content: comments.content,
+        taskId: comments.taskId,
+        author: {
+          id: comments.author.id,
+          name: comments.author.name,
+          email: comments.author.email,
+          profileImage: comments.author.profileImage,
+        },
+        createdAt: comments.createdAt,
+        updatedAt: comments.updatedAt,
+      })),
+      total,
+    };
+  },
 };
