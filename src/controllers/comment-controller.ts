@@ -51,3 +51,27 @@ export const updateComment = async (
     next(error);
   }
 };
+
+export const deleteComment = async (
+  req: AuthenticateRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const commentId = Number(req.params.commentId);
+    const userId = req.user?.id;
+
+    if (isNaN(commentId)) {
+      return handleError(next, null, errorMsg.wrongRequestFormat, statusCode.badRequest);
+    }
+
+    if (!userId) {
+      return handleError(next, null, errorMsg.loginRequired, statusCode.unauthorized);
+    }
+
+    await commentService.deleteComment(commentId, userId);
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+};

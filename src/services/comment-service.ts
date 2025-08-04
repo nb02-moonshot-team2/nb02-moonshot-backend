@@ -63,4 +63,24 @@ export const commentService = {
       updatedAt: updated.updatedAt,
     };
   },
+
+  async deleteComment(commentId: number, userId: number): Promise<void> {
+    const comment = await commentRepository.getCommentById(commentId);
+
+    if (!comment) {
+      throw {
+        status: statusCode.notFound,
+        message: errorMsg.dataNotFound,
+      };
+    }
+
+    if (comment.authorId !== userId) {
+      throw {
+        status: statusCode.forbidden,
+        message: errorMsg.accessDenied,
+      };
+    }
+
+    await commentRepository.deleteComment(commentId);
+  },
 };

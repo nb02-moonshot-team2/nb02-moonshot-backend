@@ -37,4 +37,10 @@ export const commentRepository = {
       },
     });
   },
+
+  async deleteComment(commentId: number) {
+    return await db.comments.delete({
+      where: { id: commentId },
+    });
+  },
 };
