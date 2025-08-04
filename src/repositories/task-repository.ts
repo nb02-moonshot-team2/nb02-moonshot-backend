@@ -246,4 +246,28 @@ export const taskRepository = {
 
     return !!invitation;
   },
+
+  async getCommentsByTask(taskId: number, skip: number, take: number) {
+    const [comments, total] = await Promise.all([
+      db.comments.findMany({
+        where: { taskId },
+        skip,
+        take,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              profileImage: true,
+            },
+          },
+        },
+      }),
+      db.comments.count({ where: { taskId } }),
+    ]);
+
+    return { comments, total };
+  },
 };
