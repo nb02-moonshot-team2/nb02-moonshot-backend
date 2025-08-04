@@ -10,18 +10,8 @@ export interface ProjectMemberResponse {
   invitationId: number;
 }
 
-export interface AuthenticateRequest extends Request {
-  user?: {
-    id: number;
-    email: string;
-    nickname: string;
-    password: string;
-    image: string | null;
-    refreshToken: string | null;
-    createdAt: Date;
-    updatedAt: Date;
-  };
-}
+// 따로 확장하지 않고 전역 선언된 user 사용하기 위해 기존 인터페이스 삭제
+export type AuthenticateRequest = Request;
 
 export interface GetProjectMembersQuery {
   page: number;

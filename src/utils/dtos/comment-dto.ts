@@ -17,3 +17,8 @@ export interface CreateCommentResponse {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface GetCommentsResponse {
+  data: CreateCommentResponse[];
+  total: number;
+}

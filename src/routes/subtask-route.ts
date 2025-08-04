@@ -1,12 +1,19 @@
 import express from 'express';
-import { updateSubtask, deleteSubtask } from '../controllers/subtask-controller';
-
+import { updateSubtask, deleteSubtask, getDetail } from '../controllers/subtask-controller';
+import passport from '../utils/passport/index';
 const router = express.Router();
 
-// 하위 할 일 세부조회는 frontend에 없음, 하위 할 일 생성은 taskRoute에서 합칠 예정
+router.get('/:subtaskId', passport.authenticate('access-token', { session: false }), getDetail);
 
-// router.get('/:subtaskId', getDetail);
-router.patch('/:subtaskId', updateSubtask);
-router.delete('/:subtaskId', deleteSubtask);
+router.patch(
+  '/:subtaskId',
+  passport.authenticate('access-token', { session: false }),
+  updateSubtask
+);
+router.delete(
+  '/:subtaskId',
+  passport.authenticate('access-token', { session: false }),
+  deleteSubtask
+);
 
 export default router;
