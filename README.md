@@ -69,8 +69,8 @@
 │   │   ├── auth.controller.ts
 │   │   └── user.controller.ts
 │   ├── 📁 middleware
-│   │   ├── auth.middleware.ts
-│   │   └── error.middleware.ts
+│   │   ├── error-handler.ts
+│   │   └── validation.ts
 │   ├── 📁 routes
 │   │   ├── auth.routes.ts
 │   │   └── user.routes.ts
@@ -78,8 +78,10 @@
 │   │   ├── auth.service.ts
 │   │   └── user.service.ts
 │   ├── 📁 utils
-│   ├── app.ts
-│   └── server.ts
+│   │   ├── 📁 dto
+│   ├── 📁 types
+├── app.ts
+├── server.ts
 ├── 📁 prisma
 │   ├── schema.prisma
 │   └── seed.ts
@@ -88,6 +90,7 @@
 ├── package.json
 ├── tsconfig.json
 └── README.md
+
 ```
 ---
 

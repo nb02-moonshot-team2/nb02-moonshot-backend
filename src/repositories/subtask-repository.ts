@@ -1,13 +1,5 @@
 import db from '../config/db';
 import { Prisma } from '@prisma/client';
-// taskId 필요
-// createSubtaks
-// findManyWithfilter
-
-// subtasksid 활용
-// findById
-// update
-// delete
 
 export const subtaskRepository = {
   // subtask 생성

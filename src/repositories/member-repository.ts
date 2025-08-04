@@ -24,13 +24,6 @@ export const memberRepository = {
     });
   },
 
-  async getInviationStatus(projectId: number, userId: number) {
-    return await db.invitations.findFirst({
-      where: { projectId, inviteeId: userId },
-      select: { id: true, status: true },
-    });
-  },
-
   async findProjectById(projectId: number) {
     return await db.projects.findUnique({
       where: { id: projectId },

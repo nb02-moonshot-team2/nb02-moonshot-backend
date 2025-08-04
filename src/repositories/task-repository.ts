@@ -4,6 +4,13 @@ import { CreateTaskInput, GetAllTaskfilter, UpdateTaskInput } from '../utils/dto
 import { CreateCommentRequest } from '../utils/dtos/comment-dto';
 
 export const taskRepository = {
+  // subtask service에 사용
+  async findByTaskId(taskId: number) {
+    return await db.tasks.findUnique({
+      where: { id: taskId },
+    });
+  },
+
   async findProjectById(projectId: number) {
     return await db.projects.findUnique({
       where: { id: projectId },
@@ -238,5 +245,29 @@ export const taskRepository = {
     });
 
     return !!invitation;
+  },
+
+  async getCommentsByTask(taskId: number, skip: number, take: number) {
+    const [comments, total] = await Promise.all([
+      db.comments.findMany({
+        where: { taskId },
+        skip,
+        take,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              profileImage: true,
+            },
+          },
+        },
+      }),
+      db.comments.count({ where: { taskId } }),
+    ]);
+
+    return { comments, total };
   },
 };
