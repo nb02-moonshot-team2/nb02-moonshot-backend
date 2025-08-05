@@ -57,7 +57,6 @@ export const memberService = {
     return { data, total };
   },
 
-  // 프로젝트에서 유저 제외하기 -> userId를 targetUserId와 requestUserId로 나눔 (userId 하나로 관리자(=요청자)와 삭제 대상을 모두 처리하고 있기 때문)
   async removeProjectMember(
     projectId: number,
     targetUserId: number,
@@ -73,7 +72,6 @@ export const memberService = {
     const isAdmin = await memberRepository.checkProjectAdmin(projectId, requestUserId);
     if (!isAdmin) throw { status: statusCode.forbidden, message: errorMsg.accessDenied };
 
-    // 본인 제외 불가
     if (requestUserId === targetUserId) {
       throw { status: statusCode.badRequest, message: errorMsg.wrongRequestFormat };
     }
@@ -84,7 +82,6 @@ export const memberService = {
     await memberRepository.removeProjectMember(projectId, targetUserId);
   },
 
-  // 프로젝트 멤버 초대
   async inviteMember(
     invitorId: number,
     projectId: number,
@@ -110,7 +107,6 @@ export const memberService = {
     return { invitationId: invitation.token };
   },
 
-  // 멤버 초대 수락
   async acceptInvitation({
     invitationId,
     userId,
@@ -139,7 +135,6 @@ export const memberService = {
     return { message: '초대 수락 완료' };
   },
 
-  // 멤버 초대 삭제
   async deleteInvitation({
     invitationId,
     userId,
@@ -156,9 +151,6 @@ export const memberService = {
       };
     }
 
-    // 삭제 권한: 초대한 사람(invitorId)만 가능
-    console.log('invitation.invitorId:', invitation.invitorId);
-    console.log('userId:', userId);
     if (invitation.invitorId !== userId) {
       throw {
         status: statusCode.forbidden,

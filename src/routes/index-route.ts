@@ -18,7 +18,5 @@ router.use('/', taskRouter);
 router.use('/subtasks', subtaskRouter);
 router.use('/comments', commentRouter);
 router.use('/files', fileRouter);
-router.use('/files', fileRouter);
-router.use('/comments', commentRouter);
 
 export default router;

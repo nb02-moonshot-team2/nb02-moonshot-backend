@@ -93,33 +93,6 @@ export const memberRepository = {
     });
   },
 
-  // 멤버 초대 수락
-  // async acceptInvitation(invitationId: number) {
-  //   return prisma.invitations.update({
-  //     where: { id: invitationId },
-  //     data: { acceptedAt: new Date(), status: 'accepted' },
-  //   });
-  // },
-
-  // 프로젝트 멤버 조회 (중복 체크용)
-  // async findProjectMember(projectId: number, userId: number) {
-  //   return prisma.project_members.findFirst({
-  //     where: {
-  //       projectId,
-  //       userId,
-  //     },
-  //   });
-  // },
-
-  // 프로젝트 멤버 생성
-  // async createProjectMember(projectId: number, userId: number) {
-  //   return prisma.project_members.create({
-  //     data: {
-  //       projectId,
-  //       userId,
-  //     },
-  //   });
-  // },
 
   // 멤버 초대 수락 후 Project_members 테이블 업데이트 : 트랜잭션 처리
   async acceptInvitationWithMemberJoin(invitationId: number, projectId: number, userId: number) {
@@ -146,7 +119,6 @@ export const memberRepository = {
     });
   },
 
-  // 멤버 초대 삭제
   async deleteInvitation(invitationId: number) {
     return prisma.invitations.delete({
       where: { id: invitationId },
