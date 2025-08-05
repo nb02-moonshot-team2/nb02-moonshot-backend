@@ -69,7 +69,6 @@
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
     "firebase-admin": "^13.4.0",
-    "firebase-admin": "^13.4.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.5",
