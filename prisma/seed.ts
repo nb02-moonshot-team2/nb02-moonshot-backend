@@ -156,7 +156,7 @@ async function main() {
 }
 
 main()
-  .then(() => console.log('🌱 Seed data inserted with hashed passwords!'))
+  .then(() => console.log('🌱 Seed data inserted successfully!'))
   .catch((e) => {
     console.error(e);
     process.exit(1);
