@@ -3,6 +3,9 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import routes from './routes/index-route';
 import passport from 'passport';
+
+import { useSwagger } from './config/swagger';
+
 import { errorHandler } from './middlewares/error-handler';
 
 const app = express();
@@ -21,6 +24,11 @@ app.use(passport.initialize());
 
 // 라우터 등록
 app.use('/', routes);
+
+
+// 스웨거 사용
+useSwagger(app);
+
 
 // 에러 미들웨어 등록
 app.use(errorHandler);
