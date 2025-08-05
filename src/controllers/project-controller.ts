@@ -10,8 +10,8 @@ import { handleError, statusCode, errorMsg } from '../middlewares/error-handler'
 export const createProject = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, description } = req.body;
-
     const creatorId = req.user?.id;
+
     if (!creatorId) {
       return handleError(next, null, errorMsg.loginRequired, statusCode.unauthorized);
     }

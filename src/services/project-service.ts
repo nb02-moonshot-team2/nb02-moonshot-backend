@@ -2,7 +2,6 @@ import * as projectRepository from '../repositories/project-repository';
 import { statusCode, errorMsg } from '../middlewares/error-handler';
 import { CreateProjectDTO, UpdateProjectDTO, DeleteProjectDTO } from '../utils/dtos/project-dto';
 
-// 서비스 함수 반환 타입
 interface SuccessResult<T> {
   data: T;
 }
@@ -26,14 +25,15 @@ type ProjectSummary = {
 export const createProjectService = async (
   params: CreateProjectDTO
 ): Promise<ServiceResult<ProjectSummary>> => {
-  const newProject = await projectRepository.createProject(params);
+  // 유저당 최대 5개 프로젝트 생성 제한 체크 추가 가능 (별도 repo 함수 필요)
+  const newProject = await projectRepository.createProjectWithMember(params);
 
   return {
     data: {
       id: newProject.id,
       name: newProject.name,
       description: newProject.description,
-      memberCount: 0,
+      memberCount: 1,
       todoCount: 0,
       inProgressCount: 0,
       doneCount: 0,
