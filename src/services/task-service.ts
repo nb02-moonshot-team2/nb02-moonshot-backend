@@ -24,7 +24,7 @@ export const taskService = {
       endYear,
       endMonth,
       endDay,
-      status,
+      status = 'todo',
       tags = [],
       attachments = [],
     } = taskData;
