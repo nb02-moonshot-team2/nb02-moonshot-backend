@@ -8,6 +8,7 @@ import {
 } from '../utils/dtos/task-dto';
 import { errorMsg, statusCode } from '../middlewares/error-handler';
 import { CreateCommentRequest, CreateCommentResponse } from '../utils/dtos/comment-dto';
+import { TaskOrderBy } from '../types/task-type';
 
 export const taskService = {
   async createTasks(
@@ -105,6 +106,9 @@ export const taskService = {
 
     const skip = (page - 1) * limit;
 
+    // 프론트에서 받은 orderBy 키를 백엔드에서 사용하는 키로 매핑
+    const mapOrderByKey = (key: string) => (key === 'endDate' ? 'dueDate' : key);
+
     const result = await taskRepository.getAllTasks({
       projectId: projectId,
       userId: userId,
@@ -112,7 +116,7 @@ export const taskService = {
       assignee: assignee,
       keyword: keyword,
       order: order,
-      orderBy: orderBy,
+      orderBy: mapOrderByKey(orderBy) as TaskOrderBy,
       skip: skip,
       take: limit,
     });
