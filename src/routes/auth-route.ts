@@ -1,6 +1,6 @@
 import express from 'express';
 import AuthController from '../controllers/auth-controllers';
-import passport from '../utils/jwtStrategy';
+import passport from '../utils/passport/index';
 const authController = new AuthController();
 const authRouter = express.Router();
 
@@ -13,6 +13,10 @@ authRouter.get(
   passport.authenticate('access-token', { session: false }),
   authController.test
 );
-// authRouter.post('/logout', authController.logout);
-
+authRouter.get('/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
+authRouter.get(
+  '/google/callback',
+  passport.authenticate('google', { session: false }),
+  authController.googleCallback
+);
 export default authRouter;

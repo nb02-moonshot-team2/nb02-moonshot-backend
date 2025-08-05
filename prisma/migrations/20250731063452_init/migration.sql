@@ -69,7 +69,7 @@ CREATE TABLE "Tasks" (
     "id" SERIAL NOT NULL,
     "projectId" INTEGER NOT NULL,
     "title" VARCHAR(100) NOT NULL,
-    "description" TEXT NOT NULL,
+    "description" TEXT,
     "status" "task_status" NOT NULL,
     "userId" INTEGER NOT NULL,
     "startedAt" TIMESTAMP(3) NOT NULL,
@@ -104,7 +104,7 @@ CREATE TABLE "Subtasks" (
     "isDone" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "usersId" INTEGER,
+    "userId" INTEGER,
 
     CONSTRAINT "Subtasks_pkey" PRIMARY KEY ("id")
 );
@@ -176,7 +176,7 @@ ALTER TABLE "Task_tags" ADD CONSTRAINT "Task_tags_tagId_fkey" FOREIGN KEY ("tagI
 ALTER TABLE "Subtasks" ADD CONSTRAINT "Subtasks_taskId_fkey" FOREIGN KEY ("taskId") REFERENCES "Tasks"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Subtasks" ADD CONSTRAINT "Subtasks_usersId_fkey" FOREIGN KEY ("usersId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Subtasks" ADD CONSTRAINT "Subtasks_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Comments" ADD CONSTRAINT "Comments_taskId_fkey" FOREIGN KEY ("taskId") REFERENCES "Tasks"("id") ON DELETE CASCADE ON UPDATE CASCADE;
