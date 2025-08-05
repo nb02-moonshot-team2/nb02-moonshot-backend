@@ -26,13 +26,28 @@ interface GetProjectWithCounts {
   };
 }
 
-export const createProject = async ({ creatorId, name, description }: CreateProjectParams) => {
-  return prisma.projects.create({
-    data: {
-      creatorId,
-      name,
-      description,
-    },
+export const createProjectWithMember = async ({
+  creatorId,
+  name,
+  description,
+}: CreateProjectParams) => {
+  return await prisma.$transaction(async (tx) => {
+    const newProject = await tx.projects.create({
+      data: {
+        creatorId,
+        name,
+        description,
+      },
+    });
+
+    await tx.project_members.create({
+      data: {
+        projectId: newProject.id,
+        userId: creatorId,
+      },
+    });
+
+    return newProject;
   });
 };
 
@@ -87,4 +102,17 @@ export const deleteProject = async (projectId: number) => {
   return prisma.projects.delete({
     where: { id: projectId },
   });
+};
+
+export const getProjectMembersEmails = async (projectId: number): Promise<string[]> => {
+  const members = await prisma.project_members.findMany({
+    where: { projectId },
+    select: {
+      user: {
+        select: { email: true },
+      },
+    },
+  });
+
+  return members.map((m) => m.user.email);
 };

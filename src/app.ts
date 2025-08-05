@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import routes from './routes/index-route';
-import passport from 'passport';
+import passport from './utils/passport/index';
 
 import { useSwagger } from './config/swagger';
 
@@ -24,9 +24,6 @@ app.use(passport.initialize());
 
 // 라우터 등록
 app.use('/', routes);
-
-// 스웨거 사용
-useSwagger(app);
 
 // 스웨거 사용
 useSwagger(app);
