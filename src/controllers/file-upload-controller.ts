@@ -38,7 +38,7 @@ export const uploadFiles = async (req: Request, res: Response, next: NextFunctio
     );
 
     // URL만 응답
-    return res.status(200).json({ data: uploadedUrls });
+    return res.status(200).json(uploadedUrls);
   } catch (error) {
     next(error);
   }
