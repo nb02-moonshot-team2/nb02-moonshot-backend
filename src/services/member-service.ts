@@ -129,7 +129,13 @@ export const memberService = {
       throw { status: statusCode.badRequest, message: '이미 수락된 초대입니다.' };
     }
 
-    await memberRepository.acceptInvitation(invitationId);
+    // 트랜잭션으로 초대 수락 + 멤버 등록 처리
+    await memberRepository.acceptInvitationWithMemberJoin(
+      invitationId,
+      invitation.projectId,
+      userId
+    );
+
     return { message: '초대 수락 완료' };
   },
 
