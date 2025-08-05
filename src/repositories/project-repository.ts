@@ -103,3 +103,16 @@ export const deleteProject = async (projectId: number) => {
     where: { id: projectId },
   });
 };
+
+export const getProjectMembersEmails = async (projectId: number): Promise<string[]> => {
+  const members = await prisma.project_members.findMany({
+    where: { projectId },
+    select: {
+      user: {
+        select: { email: true },
+      },
+    },
+  });
+
+  return members.map((m) => m.user.email);
+};

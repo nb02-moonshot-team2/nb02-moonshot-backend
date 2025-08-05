@@ -1,6 +1,7 @@
 import * as projectRepository from '../repositories/project-repository';
 import { statusCode, errorMsg } from '../middlewares/error-handler';
 import { CreateProjectDTO, UpdateProjectDTO, DeleteProjectDTO } from '../utils/dtos/project-dto';
+import { sendMail } from '../utils/email';
 
 interface SuccessResult<T> {
   data: T;
@@ -25,7 +26,6 @@ type ProjectSummary = {
 export const createProjectService = async (
   params: CreateProjectDTO
 ): Promise<ServiceResult<ProjectSummary>> => {
-  // 유저당 최대 5개 프로젝트 생성 제한 체크 추가 가능 (별도 repo 함수 필요)
   const newProject = await projectRepository.createProjectWithMember(params);
 
   return {
@@ -128,7 +128,24 @@ export const deleteProjectService = async (
     };
   }
 
+  // 멤버 이메일 리스트 조회
+  const membersEmails = await projectRepository.getProjectMembersEmails(projectId);
+
   await projectRepository.deleteProject(projectId);
+
+  try {
+    await Promise.all(
+      membersEmails.map((email) =>
+        sendMail({
+          to: email,
+          subject: `[MOONSHOT] "${project.data.name}" 프로젝트가 삭제되었습니다.`,
+          text: `안녕하세요.\n참여 중이던 프로젝트 "${project.data.name}"가 삭제되었습니다.`,
+        })
+      )
+    );
+  } catch (error) {
+    console.error('메일 발송 실패:', error);
+  }
 
   return {
     data: { message: '프로젝트가 성공적으로 삭제되었습니다.' },
