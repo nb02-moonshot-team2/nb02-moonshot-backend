@@ -71,13 +71,13 @@ export const memberRepository = {
   },
 
   async checkProjectAdmin(projectId: number, mockUserId: number): Promise<boolean> {
-    const propject = await prisma.projects.findFirst({
+    const project = await prisma.projects.findFirst({
       where: {
         id: projectId,
         creatorId: mockUserId,
       },
     });
-    return !!propject;
+    return !!project;
   },
 
   async isProjectMember(projectId: number, userId: number) {
