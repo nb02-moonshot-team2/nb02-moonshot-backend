@@ -49,16 +49,12 @@ router.delete(
 );
 
 // subtask 생성, subtask 목록 조회 추가
-
-// 하위 할 일 생성
 router.post(
   '/tasks/:taskId/subtasks',
   passport.authenticate('access-token', { session: false }),
   createSubtask
 );
 
-
-// 하위 할 일 목록 조회
 router.get(
   '/tasks/:taskId/subtasks',
   passport.authenticate('access-token', { session: false }),
@@ -78,5 +74,4 @@ router.get(
   passport.authenticate('access-token', { session: false }),
   getCommentsByTask
 );
-
 export default router;
