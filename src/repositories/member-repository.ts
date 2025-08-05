@@ -93,6 +93,7 @@ export const memberRepository = {
     });
   },
 
+
   // 멤버 초대 수락 후 Project_members 테이블 업데이트 : 트랜잭션 처리
   async acceptInvitationWithMemberJoin(invitationId: number, projectId: number, userId: number) {
     return await prisma.$transaction(async (tx) => {
