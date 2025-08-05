@@ -118,7 +118,6 @@ export const memberRepository = {
     });
   },
 
-  // 멤버 초대 삭제
   async deleteInvitation(invitationId: number) {
     return prisma.invitations.delete({
       where: { id: invitationId },
