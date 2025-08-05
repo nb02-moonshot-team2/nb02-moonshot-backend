@@ -25,10 +25,8 @@ app.use(passport.initialize());
 // 라우터 등록
 app.use('/', routes);
 
-
 // 스웨거 사용
 useSwagger(app);
-
 
 // 에러 미들웨어 등록
 app.use(errorHandler);
