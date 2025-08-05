@@ -1,50 +1,31 @@
 import * as projectRepository from '../repositories/project-repository';
 import { statusCode, errorMsg } from '../middlewares/error-handler';
-
-interface CreateProjectParams {
-  creatorId: number;
-  name: string;
-  description: string;
-}
-
-interface UpdateProjectParams {
-  creatorId: number;
-  projectId: number;
-  name?: string;
-  description?: string;
-}
-
-interface DeleteProjectParams {
-  creatorId: number;
-  projectId: number;
-}
+import { CreateProjectDTO, UpdateProjectDTO, DeleteProjectDTO } from '../utils/dtos/project-dto';
 
 // 서비스 함수 반환 타입
 interface SuccessResult<T> {
   data: T;
 }
-
 interface ErrorResult {
   error: true;
   message: string;
   status: number;
 }
-
 type ServiceResult<T> = SuccessResult<T> | ErrorResult;
 
+type ProjectSummary = {
+  id: number;
+  name: string;
+  description: string;
+  memberCount: number;
+  todoCount: number;
+  inProgressCount: number;
+  doneCount: number;
+};
+
 export const createProjectService = async (
-  params: CreateProjectParams
-): Promise<
-  ServiceResult<{
-    id: number;
-    name: string;
-    description: string;
-    memberCount: number;
-    todoCount: number;
-    inProgressCount: number;
-    doneCount: number;
-  }>
-> => {
+  params: CreateProjectDTO
+): Promise<ServiceResult<ProjectSummary>> => {
   const newProject = await projectRepository.createProject(params);
 
   return {
@@ -62,17 +43,7 @@ export const createProjectService = async (
 
 export const getProjectService = async (
   projectId: number
-): Promise<
-  ServiceResult<{
-    id: number;
-    name: string;
-    description: string;
-    memberCount: number;
-    todoCount: number;
-    inProgressCount: number;
-    doneCount: number;
-  }>
-> => {
+): Promise<ServiceResult<ProjectSummary>> => {
   const project = await projectRepository.getProject(projectId);
 
   if (!project) {
@@ -83,35 +54,14 @@ export const getProjectService = async (
     };
   }
 
-  const { id, name, description, memberCount, todoCount, inProgressCount, doneCount } =
-    project.data;
-
   return {
-    data: {
-      id,
-      name,
-      description,
-      memberCount,
-      todoCount,
-      inProgressCount,
-      doneCount,
-    },
+    data: project.data,
   };
 };
 
 export const updateProjectService = async (
-  params: UpdateProjectParams
-): Promise<
-  ServiceResult<{
-    id: number;
-    name: string;
-    description: string;
-    memberCount: number;
-    todoCount: number;
-    inProgressCount: number;
-    doneCount: number;
-  }>
-> => {
+  params: UpdateProjectDTO
+): Promise<ServiceResult<ProjectSummary>> => {
   const { creatorId, projectId, name, description } = params;
 
   const project = await projectRepository.getProject(projectId);
@@ -156,7 +106,7 @@ export const updateProjectService = async (
 };
 
 export const deleteProjectService = async (
-  params: DeleteProjectParams
+  params: DeleteProjectDTO
 ): Promise<ServiceResult<{ message: string }>> => {
   const { creatorId, projectId } = params;
 
