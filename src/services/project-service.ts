@@ -26,18 +26,6 @@ type ProjectSummary = {
 export const createProjectService = async (
   params: CreateProjectDTO
 ): Promise<ServiceResult<ProjectSummary>> => {
-  // 최대 생성 제한 체크
-  const projectCount = await projectRepository.countProjectsByCreator(params.creatorId);
-
-  if (projectCount >= 5) {
-    return {
-      error: true,
-      status: statusCode.badRequest,
-      message: errorMsg.maxProjectLimit,
-    };
-  }
-
-  // 제한 미충족 시 생성 진행
   const newProject = await projectRepository.createProjectWithMember(params);
 
   return {
@@ -140,6 +128,7 @@ export const deleteProjectService = async (
     };
   }
 
+  // 멤버 이메일 리스트 조회
   const membersEmails = await projectRepository.getProjectMembersEmails(projectId);
 
   await projectRepository.deleteProject(projectId);
