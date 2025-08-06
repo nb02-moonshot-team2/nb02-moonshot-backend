@@ -88,12 +88,24 @@ export const memberRepository = {
   },
 
   async removeProjectMember(projectId: number, targetUserId: number): Promise<void> {
-    await prisma.project_members.deleteMany({
-      where: {
-        projectId,
-        userId: targetUserId,
-      },
-    });
+    await prisma.$transaction([
+      prisma.project_members.deleteMany({
+        where: {
+          projectId,
+          userId: targetUserId,
+        },
+      }),
+      prisma.invitations.updateMany({
+        where: {
+          projectId,
+          inviteeId: targetUserId,
+          status: 'accepted', // 현재 accepted 상태인 경우만 변경
+        },
+        data: {
+          status: 'rejected',
+        },
+      }),
+    ]);
   },
 
   async isProjectOwner(projectId: number, userId: number) {
