@@ -10,6 +10,9 @@ class AuthRepository {
     profileImage: Users['profileImage'],
     provider: Users['provider']
   ) => {
+    if (profileImage === null) {
+      profileImage = 'https://example.com/default-img.png';
+    }
     const user = await prisma.users.create({
       data: {
         email,
