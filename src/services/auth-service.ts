@@ -171,9 +171,7 @@ class AuthService {
       await this.saveRefreshToken(user.id, refreshToken);
       // 쿼리 파라미터로 토큰을 포함하여 프론트엔드 사이트에 리디렉션
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-      res.redirect(
-        `${frontendUrl}/auth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}`
-      );
+      res.redirect(frontendUrl);
     } catch (err) {
       next(err);
     }
