@@ -2,59 +2,19 @@ import prisma from '../config/db';
 import { v4 as uuidv4 } from 'uuid';
 
 export const memberRepository = {
-  async getProjectMembers(
-    projectId: number,
-    skip: number,
-    take: number
-  ): Promise<{
-    creator: {
-      id: number;
-      name: string;
-      email: string;
-      profileImage: string;
-    };
-    creatorId: number;
-    members: {
-      id: number;
-      status: 'pending' | 'accepted' | 'rejected';
-      invitee: {
-        id: number;
-        name: string;
-        email: string;
-        profileImage: string;
-      };
-    }[];
-    total: number;
-  }> {
-    const project = await prisma.projects.findUnique({
-      where: { id: projectId },
-      include: { creator: true },
-    });
-
-    if (!project) throw new Error('Project not found');
-
+  async getProjectMembers(projectId: number, skip: number, take: number) {
     const members = await prisma.invitations.findMany({
-      where: { projectId },
+      where: { projectId, status: 'accepted' },
       include: { invitee: true },
       skip,
       take,
     });
 
-    const total = await prisma.invitations.count({
+    const total = await prisma.project_members.count({
       where: { projectId },
     });
 
-    return {
-      creator: {
-        id: project.creator.id,
-        name: project.creator.name,
-        email: project.creator.email,
-        profileImage: project.creator.profileImage,
-      },
-      creatorId: project.creatorId,
-      members,
-      total: total + 1, // creator 포함
-    };
+    return { members, total };
   },
 
   async getTaskCount(projectId: number, userId: number) {
@@ -71,13 +31,13 @@ export const memberRepository = {
   },
 
   async checkProjectAdmin(projectId: number, mockUserId: number): Promise<boolean> {
-    const project = await prisma.projects.findFirst({
+    const propject = await prisma.projects.findFirst({
       where: {
         id: projectId,
         creatorId: mockUserId,
       },
     });
-    return !!project;
+    return !!propject;
   },
 
   async isProjectMember(projectId: number, userId: number) {

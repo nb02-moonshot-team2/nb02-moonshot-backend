@@ -7,7 +7,7 @@ export interface ProjectMemberResponse {
   profileImage: string;
   taskCount: number;
   status: 'pending' | 'accepted' | 'rejected';
-  invitationId: number | null;
+  invitationId: number;
 }
 
 // 따로 확장하지 않고 전역 선언된 user 사용하기 위해 기존 인터페이스 삭제
@@ -25,10 +25,4 @@ export interface InviteMember {
 export interface AcceptInvitationParams {
   invitationId: number;
   userId: number;
-}
-
-export interface GetProjectMembersResponse {
-  data: ProjectMemberResponse[];
-  total: number;
-  creatorId: number;
 }

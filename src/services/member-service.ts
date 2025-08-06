@@ -1,6 +1,5 @@
 import {
   ProjectMemberResponse,
-  GetProjectMembersResponse,
   GetProjectMembersQuery,
   InviteMember,
   AcceptInvitationParams,
@@ -13,7 +12,7 @@ export const memberService = {
     projectId: number,
     query: GetProjectMembersQuery,
     userId?: number
-  ): Promise<GetProjectMembersResponse> {
+  ): Promise<{ data: ProjectMemberResponse[]; total: number }> {
     const project = await memberRepository.findProjectById(projectId);
     if (!project) {
       throw { status: statusCode.notFound, message: errorMsg.projectNotFound };
@@ -27,27 +26,20 @@ export const memberService = {
     }
 
     const skip = (query.page - 1) * query.limit;
-    const { creator, creatorId, members, total } = await memberRepository.getProjectMembers(
+    const { members, total } = await memberRepository.getProjectMembers(
       projectId,
       skip,
       query.limit
     );
 
-    const creatorTaskCount = await memberRepository.getTaskCount(projectId, creator.id);
+    if (!members || members.length === 0) {
+      throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
+    }
 
-    const creatorDto: ProjectMemberResponse = {
-      id: creator.id,
-      name: creator.name,
-      email: creator.email,
-      profileImage: creator.profileImage,
-      taskCount: creatorTaskCount,
-      status: 'accepted', // 생성자는 따로 초대 status 없음
-      invitationId: null,
-    };
-
-    const memberDtos: ProjectMemberResponse[] = await Promise.all(
+    const data: ProjectMemberResponse[] = await Promise.all(
       members.map(async (member) => {
         const { id, name, email, profileImage } = member.invitee;
+
         const taskCount = await memberRepository.getTaskCount(projectId, id);
 
         return {
@@ -62,11 +54,7 @@ export const memberService = {
       })
     );
 
-    return {
-      data: [creatorDto, ...memberDtos],
-      total,
-      creatorId,
-    };
+    return { data, total };
   },
 
   async removeProjectMember(
