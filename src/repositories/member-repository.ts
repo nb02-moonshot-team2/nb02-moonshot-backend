@@ -70,11 +70,11 @@ export const memberRepository = {
     });
   },
 
-  async checkProjectAdmin(projectId: number, mockUserId: number): Promise<boolean> {
+  async checkProjectAdmin(projectId: number, requestUserId: number): Promise<boolean> {
     const project = await prisma.projects.findFirst({
       where: {
         id: projectId,
-        creatorId: mockUserId,
+        creatorId: requestUserId,
       },
     });
     return !!project;
