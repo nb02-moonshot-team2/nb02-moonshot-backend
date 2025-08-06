@@ -43,7 +43,9 @@ export const handleError = (
   message: string = errorMsg.serverError,
   status: number = statusCode.internalServerError
 ) => {
-  console.error('Error:', error);
+  if (error) {
+    console.error('Error:', error);
+  }
   const err = new Error(message) as Error & { status?: number };
   err.status = status;
   return next(err);

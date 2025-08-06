@@ -4,7 +4,7 @@ import { task_status } from '@prisma/client';
 interface CreateProjectParams {
   creatorId: number;
   name: string;
-  description: string;
+  description?: string;
 }
 
 interface UpdateProjectParams {
@@ -26,10 +26,16 @@ interface GetProjectWithCounts {
   };
 }
 
+export const countProjectsByCreator = async (creatorId: number): Promise<number> => {
+  return await prisma.projects.count({
+    where: { creatorId },
+  });
+};
+
 export const createProjectWithMember = async ({
   creatorId,
   name,
-  description,
+  description = '',
 }: CreateProjectParams) => {
   return await prisma.$transaction(async (tx) => {
     const newProject = await tx.projects.create({
