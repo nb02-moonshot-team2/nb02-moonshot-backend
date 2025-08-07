@@ -18,7 +18,7 @@ export const taskService = {
   ): Promise<CreateTaskResponse> {
     const {
       title,
-      description = '',
+      description,
       startYear,
       startMonth,
       startDay,
@@ -26,8 +26,8 @@ export const taskService = {
       endMonth,
       endDay,
       status = 'todo',
-      tags = [],
-      attachments = [],
+      tags,
+      attachments,
     } = taskData;
 
     const project = await taskRepository.findProjectById(projectId);
@@ -52,7 +52,7 @@ export const taskService = {
       startedAt,
       dueDate,
       tags,
-      attachments: attachments.map((url) => ({
+      attachments: attachments?.map((url) => ({
         name: url.split('/').pop() || 'file',
         url,
       })),
@@ -192,6 +192,7 @@ export const taskService = {
       id: task.id,
       projectId: task.projectId,
       title: task.title,
+      description: task.description,
       startYear: start.getFullYear(),
       startMonth: start.getMonth() + 1,
       startDay: start.getDate(),
@@ -218,7 +219,7 @@ export const taskService = {
   async updateTask(taskId: number, userId: number, taskData: UpdateTaskRequest) {
     const {
       title,
-      description = '',
+      description,
       startYear,
       startMonth,
       startDay,
@@ -227,8 +228,8 @@ export const taskService = {
       endDay,
       status,
       assigneeId,
-      tags = [],
-      attachments = [],
+      tags,
+      attachments,
     } = taskData;
 
     const getProjectId = await taskRepository.getProjectIdOfTask(taskId);
@@ -260,7 +261,7 @@ export const taskService = {
       status,
       assigneeId,
       tags,
-      attachments: attachments.map((url) => ({
+      attachments: attachments?.map((url) => ({
         name: url.split('/').pop() || 'file',
         url,
       })),
