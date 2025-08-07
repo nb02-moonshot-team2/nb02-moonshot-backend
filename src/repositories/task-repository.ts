@@ -178,24 +178,30 @@ export const taskRepository = {
         startedAt,
         dueDate,
         status,
-        taskTags: {
-          deleteMany: {},
-          create: (tags ?? []).map((tagName) => ({
-            tag: {
-              connectOrCreate: {
-                where: { tag: tagName },
-                create: { tag: tagName },
-              },
-            },
-          })),
-        },
-        taskFiles: {
-          deleteMany: {},
-          create: (attachments ?? []).map((file) => ({
-            fileName: file.name,
-            fileUrl: file.url,
-          })),
-        },
+        taskTags:
+          tags !== undefined
+            ? {
+                deleteMany: {},
+                create: (tags ?? []).map((tagName) => ({
+                  tag: {
+                    connectOrCreate: {
+                      where: { tag: tagName },
+                      create: { tag: tagName },
+                    },
+                  },
+                })),
+              }
+            : undefined,
+        taskFiles:
+          attachments !== undefined
+            ? {
+                deleteMany: {},
+                create: (attachments ?? []).map((file) => ({
+                  fileName: file.name,
+                  fileUrl: file.url,
+                })),
+              }
+            : undefined,
       },
       include: {
         user: {
