@@ -337,6 +337,7 @@ export const taskService = {
 
     // 2. 프로젝트 멤버 권한 확인 (Invitations에서 status: accepted 여부 검사)
     const isMember = await taskRepository.checkIfProjectMember(task.projectId, userId);
+
     if (!isMember) {
       throw {
         status: statusCode.forbidden,
@@ -372,6 +373,7 @@ export const taskService = {
     }
 
     const isMember = await taskRepository.checkIfProjectMember(task.projectId, userId);
+
     if (!isMember) {
       throw {
         status: statusCode.forbidden,
