@@ -209,10 +209,7 @@ export const taskService = {
         id: tag.id,
         name: tag.tag,
       })),
-      attachments: task.taskFiles.map((file) => ({
-        id: file.id,
-        url: file.fileUrl,
-      })),
+      attachments: task.taskFiles.map((file) => file.fileUrl),
       createdAt: task.createdAt,
       updatedAt: task.updatedAt,
     };
@@ -246,8 +243,12 @@ export const taskService = {
       throw { status: statusCode.forbidden, message: errorMsg.accessDenied };
     }
 
-    const startedAt = new Date(startYear, startMonth - 1, startDay);
-    const dueDate = new Date(endYear, endMonth - 1, endDay);
+    const startedAt =
+      startYear && startMonth && startDay
+        ? new Date(startYear, startMonth - 1, startDay)
+        : undefined;
+    const dueDate =
+      endYear && endMonth && endDay ? new Date(endYear, endMonth - 1, endDay) : undefined;
 
     const updatedTask = await taskRepository.updateTask({
       taskId,
@@ -291,10 +292,7 @@ export const taskService = {
         id: tag.id,
         name: tag.tag,
       })),
-      attachments: updatedTask.taskFiles.map((file) => ({
-        id: file.id,
-        url: file.fileUrl,
-      })),
+      attachments: updatedTask.taskFiles.map((file) => file.fileUrl),
       createdAt: updatedTask.createdAt,
       updatedAt: updatedTask.updatedAt,
     };
