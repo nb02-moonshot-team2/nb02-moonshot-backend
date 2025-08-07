@@ -91,6 +91,12 @@ export const subtaskService = {
     const isProjectMember = await memberRepository.isProjectMember(task.projectId, userId);
     if (!isProjectMember) throw { status: statusCode.forbidden, message: errorMsg.accessDenied };
 
+    // status 를 isDone 으로 변환
+    if ('status' in data) {
+      data.isDone = data.status === 'done';
+      delete data.status;
+    }
+
     const updated = await subtaskRepository.update(subTaskId, data);
     return {
       id: updated.id,
