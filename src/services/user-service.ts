@@ -97,7 +97,25 @@ class UserService {
   }
 
   async getMyTasks(userId: number, filter: TaskFilterOptions) {
-    return this.userRepository.findTasksByUser(userId, filter);
+    const tasks = await this.userRepository.findTasksByUser(userId, filter);
+
+    return tasks.map((task) => ({
+      id: task.id,
+      projectId: task.projectId,
+      title: task.title,
+      startYear: task.startedAt?.getFullYear() ?? null,
+      startMonth: task.startedAt ? task.startedAt.getMonth() + 1 : null,
+      startDay: task.startedAt?.getDate() ?? null,
+      endYear: task.dueDate?.getFullYear() ?? null,
+      endMonth: task.dueDate ? task.dueDate.getMonth() + 1 : null,
+      endDay: task.dueDate?.getDate() ?? null,
+      status: task.status,
+      assignee: task.user,
+      tags: task.taskTags.map((tag) => tag.tag),
+      attachments: task.taskFiles,
+      createdAt: task.createdAt,
+      updatedAt: task.updatedAt,
+    }));
   }
 }
 
