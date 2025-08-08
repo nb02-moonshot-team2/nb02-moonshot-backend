@@ -203,4 +203,33 @@ export const memberService = {
     );
     return { data, total };
   },
+
+  async rejectInvitation({
+    invitationId,
+    userId,
+  }: {
+    invitationId: number;
+    userId: number;
+  }): Promise<{ message: string }> {
+    const invitation = await memberRepository.findInvitationById(invitationId);
+
+    if (!invitation) {
+      throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
+    }
+
+    // 본인 초대만 거절 가능
+    if (invitation.inviteeId !== userId) {
+      throw { status: statusCode.forbidden, message: errorMsg.accessDenied };
+    }
+
+    if (invitation.status === 'accepted') {
+      throw { status: statusCode.badRequest, message: '이미 수락된 초대입니다.' };
+    }
+    if (invitation.status === 'rejected') {
+      throw { status: statusCode.badRequest, message: '이미 거절된 초대입니다.' };
+    }
+
+    await memberRepository.rejectInvitation(invitationId);
+    return { message: '초대 거절 완료' };
+  },
 };

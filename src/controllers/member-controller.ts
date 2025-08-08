@@ -170,3 +170,31 @@ export const getMyInvitations = async (
     next(error);
   }
 };
+
+//  멤버 초대 거절
+export const rejectInvitation = async (
+  req: AuthenticateRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const invitationId = Number(req.params.invitationId);
+
+    if (!req.user?.id) {
+      return handleError(next, null, errorMsg.loginRequired, statusCode.unauthorized);
+    }
+
+    if (isNaN(invitationId)) {
+      return handleError(next, null, errorMsg.wrongRequestFormat, statusCode.badRequest);
+    }
+
+    const result = await memberService.rejectInvitation({
+      invitationId,
+      userId: req.user.id,
+    });
+
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};

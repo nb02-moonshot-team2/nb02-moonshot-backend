@@ -215,4 +215,11 @@ export const memberRepository = {
 
     return { data, total };
   },
+
+  async rejectInvitation(invitationId: number) {
+    return prisma.invitations.update({
+      where: { id: invitationId },
+      data: { status: 'rejected' },
+    });
+  },
 };
