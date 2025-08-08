@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
-
+import { handleError, statusCode, errorMsg } from '../middlewares/error-handler';
 const prisma = new PrismaClient();
 
 export async function authorization(req: Request, res: Response, next: NextFunction) {
@@ -8,11 +8,11 @@ export async function authorization(req: Request, res: Response, next: NextFunct
   const projectId = Number(req.params.projectId);
 
   if (!userId) {
-    return res.status(401).json({ message: '로그인이 필요합니다.' });
+    return handleError(next, null, errorMsg.loginRequired, statusCode.unauthorized);
   }
 
   if (isNaN(projectId)) {
-    return res.status(400).json({ message: '유효하지 않은 프로젝트 ID입니다.' });
+    return handleError(next, null, errorMsg.invalidProjectId, statusCode.badRequest);
   }
 
   try {
@@ -21,12 +21,11 @@ export async function authorization(req: Request, res: Response, next: NextFunct
     });
 
     if (!isMember) {
-      return res.status(403).json({ message: '프로젝트 접근 권한이 없습니다.' });
+      return handleError(next, null, errorMsg.accessDenied, statusCode.forbidden);
     }
 
     next();
   } catch (error) {
-    console.error('authorization error:', error);
-    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+    handleError(next, error, errorMsg.serverError, statusCode.internalServerError);
   }
 }
