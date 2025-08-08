@@ -14,7 +14,7 @@ router.use('/', memberRouter);
 router.use('/auth', authRouter);
 router.use('/users', userRouter);
 router.use('/projects', projectRouter);
-router.use('/', taskRouter);
+router.use('/tasks', taskRouter);
 router.use('/subtasks', subtaskRouter);
 router.use('/comments', commentRouter);
 router.use('/files', fileRouter);
