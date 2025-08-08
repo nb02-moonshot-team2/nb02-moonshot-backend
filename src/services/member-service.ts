@@ -172,4 +172,35 @@ export const memberService = {
 
     await memberRepository.deleteInvitation(invitationId);
   },
+
+  async getMyInvitations({
+    userId,
+    status,
+    page,
+    limit,
+  }: {
+    userId: number;
+    status: 'pending' | 'accepted' | 'rejected' | 'all';
+    page: number;
+    limit: number;
+  }): Promise<{
+    data: Array<{
+      id: number;
+      status: 'pending' | 'accepted' | 'rejected';
+      projectId: number;
+      invitedAt: Date;
+      project: { id: number; name: string; description: string | null };
+    }>;
+    total: number;
+  }> {
+    const skip = (page - 1) * limit;
+    const filterStatus = status === 'all' ? undefined : status;
+    const { data, total } = await memberRepository.findInvitationsByInvitee(
+      userId,
+      filterStatus,
+      skip,
+      limit
+    );
+    return { data, total };
+  },
 };

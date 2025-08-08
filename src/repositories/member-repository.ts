@@ -175,4 +175,44 @@ export const memberRepository = {
       where: { id: invitationId },
     });
   },
+
+  async findInvitationsByInvitee(
+    inviteeId: number,
+    status?: 'pending' | 'accepted' | 'rejected',
+    skip = 0,
+    take = 10
+  ): Promise<{
+    data: Array<{
+      id: number;
+      status: 'pending' | 'accepted' | 'rejected';
+      projectId: number;
+      invitedAt: Date;
+      project: { id: number; name: string; description: string | null };
+    }>;
+    total: number;
+  }> {
+    const where = {
+      inviteeId,
+      ...(status ? { status } : {}),
+    };
+
+    const [data, total] = await Promise.all([
+      prisma.invitations.findMany({
+        where,
+        select: {
+          id: true,
+          status: true,
+          projectId: true,
+          invitedAt: true,
+          project: { select: { id: true, name: true, description: true } },
+        },
+        orderBy: { invitedAt: 'desc' },
+        skip,
+        take,
+      }),
+      prisma.invitations.count({ where }),
+    ]);
+
+    return { data, total };
+  },
 };

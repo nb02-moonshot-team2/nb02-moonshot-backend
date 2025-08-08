@@ -6,6 +6,7 @@ import {
   inviteMember,
   acceptInvitation,
   deleteInvitation,
+  getMyInvitations,
 } from '../controllers/member-controller';
 
 const router = Router();
@@ -43,6 +44,13 @@ router.delete(
   '/invitations/:invitationId',
   passport.authenticate('access-token', { session: false }),
   deleteInvitation
+);
+
+// 내가 받은 초대 목록 조회
+router.get(
+  '/invitations/me',
+  passport.authenticate('access-token', { session: false }),
+  getMyInvitations
 );
 
 export default router;
