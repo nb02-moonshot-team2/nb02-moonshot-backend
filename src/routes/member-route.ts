@@ -6,6 +6,8 @@ import {
   inviteMember,
   acceptInvitation,
   deleteInvitation,
+  getMyInvitations,
+  rejectInvitation,
 } from '../controllers/member-controller';
 
 const router = Router();
@@ -43,6 +45,20 @@ router.delete(
   '/invitations/:invitationId',
   passport.authenticate('access-token', { session: false }),
   deleteInvitation
+);
+
+// 내가 받은 초대 목록 조회
+router.get(
+  '/invitations/me',
+  passport.authenticate('access-token', { session: false }),
+  getMyInvitations
+);
+
+// 멤버 초대 거절
+router.delete(
+  '/invitations/:invitationId/reject',
+  passport.authenticate('access-token', { session: false }),
+  rejectInvitation
 );
 
 export default router;

@@ -178,24 +178,30 @@ export const taskRepository = {
         startedAt,
         dueDate,
         status,
-        taskTags: {
-          deleteMany: {},
-          create: (tags ?? []).map((tagName) => ({
-            tag: {
-              connectOrCreate: {
-                where: { tag: tagName },
-                create: { tag: tagName },
-              },
-            },
-          })),
-        },
-        taskFiles: {
-          deleteMany: {},
-          create: (attachments ?? []).map((file) => ({
-            fileName: file.name,
-            fileUrl: file.url,
-          })),
-        },
+        taskTags:
+          tags !== undefined
+            ? {
+                deleteMany: {},
+                create: (tags ?? []).map((tagName) => ({
+                  tag: {
+                    connectOrCreate: {
+                      where: { tag: tagName },
+                      create: { tag: tagName },
+                    },
+                  },
+                })),
+              }
+            : undefined,
+        taskFiles:
+          attachments !== undefined
+            ? {
+                deleteMany: {},
+                create: (attachments ?? []).map((file) => ({
+                  fileName: file.name,
+                  fileUrl: file.url,
+                })),
+              }
+            : undefined,
       },
       include: {
         user: {
@@ -235,7 +241,18 @@ export const taskRepository = {
     });
   },
 
-  async checkIfAcceptedMember(projectId: number, userId: number): Promise<boolean> {
+  async checkIfProjectMember(projectId: number, userId: number): Promise<boolean> {
+    // 1. 프로젝트 생성자인지 확인
+    const project = await db.projects.findFirst({
+      where: {
+        id: projectId,
+        creatorId: userId,
+      },
+    });
+
+    if (project) return true;
+
+    // 2. 초대를 수락한 멤버인지 확인
     const invitation = await db.invitations.findFirst({
       where: {
         projectId,
@@ -247,7 +264,7 @@ export const taskRepository = {
     return !!invitation;
   },
 
-  async getCommentsByTask(taskId: number, skip: number, take: number) {
+  async getCommentsByTask(taskId: number, skip = 0, take = 100) {
     const [comments, total] = await Promise.all([
       db.comments.findMany({
         where: { taskId },

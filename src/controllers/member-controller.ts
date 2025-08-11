@@ -136,3 +136,65 @@ export const deleteInvitation = async (
     next(error);
   }
 };
+
+// 내가 받은 초대 목록 조회
+export const getMyInvitations = async (
+  req: AuthenticateRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (!req.user?.id) {
+      return handleError(next, null, errorMsg.loginRequired, statusCode.unauthorized);
+    }
+
+    // ?status=pending|accepted|rejected|all (default: pending)
+    const status = (req.query.status as string) || 'pending';
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+
+    const allowed = ['pending', 'accepted', 'rejected', 'all'];
+    if (!allowed.includes(status) || page < 1 || limit < 1) {
+      return handleError(next, null, errorMsg.wrongRequestFormat, statusCode.badRequest);
+    }
+
+    const { data, total } = await memberService.getMyInvitations({
+      userId: req.user?.id,
+      status: status as 'pending' | 'accepted' | 'rejected' | 'all',
+      page,
+      limit,
+    });
+    console.log({ data, total });
+    return res.status(200).json({ data, total });
+  } catch (error) {
+    next(error);
+  }
+};
+
+//  멤버 초대 거절
+export const rejectInvitation = async (
+  req: AuthenticateRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const invitationId = Number(req.params.invitationId);
+
+    if (!req.user?.id) {
+      return handleError(next, null, errorMsg.loginRequired, statusCode.unauthorized);
+    }
+
+    if (isNaN(invitationId)) {
+      return handleError(next, null, errorMsg.wrongRequestFormat, statusCode.badRequest);
+    }
+
+    const result = await memberService.rejectInvitation({
+      invitationId,
+      userId: req.user.id,
+    });
+
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};

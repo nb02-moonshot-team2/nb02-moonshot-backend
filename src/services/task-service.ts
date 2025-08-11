@@ -18,7 +18,7 @@ export const taskService = {
   ): Promise<CreateTaskResponse> {
     const {
       title,
-      description = '',
+      description,
       startYear,
       startMonth,
       startDay,
@@ -26,8 +26,8 @@ export const taskService = {
       endMonth,
       endDay,
       status = 'todo',
-      tags = [],
-      attachments = [],
+      tags,
+      attachments,
     } = taskData;
 
     const project = await taskRepository.findProjectById(projectId);
@@ -52,7 +52,7 @@ export const taskService = {
       startedAt,
       dueDate,
       tags,
-      attachments: attachments.map((url) => ({
+      attachments: attachments?.map((url) => ({
         name: url.split('/').pop() || 'file',
         url,
       })),
@@ -192,6 +192,7 @@ export const taskService = {
       id: task.id,
       projectId: task.projectId,
       title: task.title,
+      description: task.description,
       startYear: start.getFullYear(),
       startMonth: start.getMonth() + 1,
       startDay: start.getDate(),
@@ -209,10 +210,7 @@ export const taskService = {
         id: tag.id,
         name: tag.tag,
       })),
-      attachments: task.taskFiles.map((file) => ({
-        id: file.id,
-        url: file.fileUrl,
-      })),
+      attachments: task.taskFiles.map((file) => file.fileUrl),
       createdAt: task.createdAt,
       updatedAt: task.updatedAt,
     };
@@ -221,7 +219,7 @@ export const taskService = {
   async updateTask(taskId: number, userId: number, taskData: UpdateTaskRequest) {
     const {
       title,
-      description = '',
+      description,
       startYear,
       startMonth,
       startDay,
@@ -230,8 +228,8 @@ export const taskService = {
       endDay,
       status,
       assigneeId,
-      tags = [],
-      attachments = [],
+      tags,
+      attachments,
     } = taskData;
 
     const getProjectId = await taskRepository.getProjectIdOfTask(taskId);
@@ -246,8 +244,12 @@ export const taskService = {
       throw { status: statusCode.forbidden, message: errorMsg.accessDenied };
     }
 
-    const startedAt = new Date(startYear, startMonth - 1, startDay);
-    const dueDate = new Date(endYear, endMonth - 1, endDay);
+    const startedAt =
+      startYear && startMonth && startDay
+        ? new Date(startYear, startMonth - 1, startDay)
+        : undefined;
+    const dueDate =
+      endYear && endMonth && endDay ? new Date(endYear, endMonth - 1, endDay) : undefined;
 
     const updatedTask = await taskRepository.updateTask({
       taskId,
@@ -259,7 +261,7 @@ export const taskService = {
       status,
       assigneeId,
       tags,
-      attachments: attachments.map((url) => ({
+      attachments: attachments?.map((url) => ({
         name: url.split('/').pop() || 'file',
         url,
       })),
@@ -291,10 +293,7 @@ export const taskService = {
         id: tag.id,
         name: tag.tag,
       })),
-      attachments: updatedTask.taskFiles.map((file) => ({
-        id: file.id,
-        url: file.fileUrl,
-      })),
+      attachments: updatedTask.taskFiles.map((file) => file.fileUrl),
       createdAt: updatedTask.createdAt,
       updatedAt: updatedTask.updatedAt,
     };
@@ -337,7 +336,8 @@ export const taskService = {
     }
 
     // 2. 프로젝트 멤버 권한 확인 (Invitations에서 status: accepted 여부 검사)
-    const isMember = await taskRepository.checkIfAcceptedMember(task.projectId, userId);
+    const isMember = await taskRepository.checkIfProjectMember(task.projectId, userId);
+
     if (!isMember) {
       throw {
         status: statusCode.forbidden,
@@ -372,7 +372,8 @@ export const taskService = {
       };
     }
 
-    const isMember = await taskRepository.checkIfAcceptedMember(task.projectId, userId);
+    const isMember = await taskRepository.checkIfProjectMember(task.projectId, userId);
+
     if (!isMember) {
       throw {
         status: statusCode.forbidden,
