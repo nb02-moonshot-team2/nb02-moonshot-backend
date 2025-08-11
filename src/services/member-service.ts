@@ -46,20 +46,24 @@ export const memberService = {
     };
 
     const memberDtos: ProjectMemberResponse[] = await Promise.all(
-      members.map(async (member) => {
-        const { id, name, email, profileImage } = member.invitee;
-        const taskCount = await memberRepository.getTaskCount(projectId, id);
+      members
+        .filter((m) => m.invitee.id !== creatorId)
+        .map(async (member) => {
+          const { id, name, email, profileImage } = member.invitee;
+          const taskCount = await memberRepository.getTaskCount(projectId, id);
 
-        return {
-          id,
-          name,
-          email,
-          profileImage,
-          taskCount,
-          status: member.status,
-          invitationId: member.id,
-        };
-      })
+          return {
+            id,
+            name,
+            email,
+            profileImage,
+            taskCount,
+            status: member.status,
+            invitationId: member.invitationId ?? null,
+          };
+        })
+
+
     );
 
     return {
@@ -84,12 +88,22 @@ export const memberService = {
     const isAdmin = await memberRepository.checkProjectAdmin(projectId, requestUserId);
     if (!isAdmin) throw { status: statusCode.forbidden, message: errorMsg.accessDenied };
 
+    if (targetUserId === project.creatorId) {
+      throw { status: statusCode.badRequest, message: '프로젝트 생성자는 제외할 수 없습니다.' };
+    }
+
     if (requestUserId === targetUserId) {
       throw { status: statusCode.badRequest, message: errorMsg.wrongRequestFormat };
     }
 
-    const isMember = await memberRepository.isProjectMember(projectId, targetUserId);
-    if (!isMember) throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
+    const [isMember, hasPending] = await Promise.all([
+      memberRepository.isProjectMember(projectId, targetUserId),
+      memberRepository.hasPendingInvite(projectId, targetUserId),
+    ]);
+
+    if (!isMember && !hasPending) {
+      throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
+    }
 
     await memberRepository.removeProjectMember(projectId, targetUserId);
   },
@@ -171,5 +185,65 @@ export const memberService = {
     }
 
     await memberRepository.deleteInvitation(invitationId);
+  },
+
+  async getMyInvitations({
+    userId,
+    status,
+    page,
+    limit,
+  }: {
+    userId: number;
+    status: 'pending' | 'accepted' | 'rejected' | 'all';
+    page: number;
+    limit: number;
+  }): Promise<{
+    data: Array<{
+      id: number;
+      status: 'pending' | 'accepted' | 'rejected';
+      projectId: number;
+      invitedAt: Date;
+      project: { id: number; name: string; description: string | null };
+    }>;
+    total: number;
+  }> {
+    const skip = (page - 1) * limit;
+    const filterStatus = status === 'all' ? undefined : status;
+    const { data, total } = await memberRepository.findInvitationsByInvitee(
+      userId,
+      filterStatus,
+      skip,
+      limit
+    );
+    return { data, total };
+  },
+
+  async rejectInvitation({
+    invitationId,
+    userId,
+  }: {
+    invitationId: number;
+    userId: number;
+  }): Promise<{ message: string }> {
+    const invitation = await memberRepository.findInvitationById(invitationId);
+
+    if (!invitation) {
+      throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
+    }
+
+    // 본인 초대만 거절 가능
+    if (invitation.inviteeId !== userId) {
+      throw { status: statusCode.forbidden, message: errorMsg.accessDenied };
+    }
+
+    if (invitation.status === 'accepted') {
+      throw { status: statusCode.badRequest, message: '이미 수락된 초대입니다.' };
+    }
+    if (invitation.status === 'rejected') {
+      throw { status: statusCode.badRequest, message: '이미 거절된 초대입니다.' };
+    }
+
+    await memberRepository.rejectInvitation(invitationId);
+    return { message: '초대 거절 완료' };
   },
 };

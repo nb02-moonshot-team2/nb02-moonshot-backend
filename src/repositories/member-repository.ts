@@ -7,16 +7,11 @@ export const memberRepository = {
     skip: number,
     take: number
   ): Promise<{
-    creator: {
-      id: number;
-      name: string;
-      email: string;
-      profileImage: string;
-    };
+    creator: { id: number; name: string; email: string; profileImage: string };
     creatorId: number;
     members: {
-      id: number;
-      status: 'pending' | 'accepted' | 'rejected';
+      status: 'pending' | 'accepted';
+      invitationId: number | null;
       invitee: {
         id: number;
         name: string;
@@ -30,19 +25,51 @@ export const memberRepository = {
       where: { id: projectId },
       include: { creator: true },
     });
-
     if (!project) throw new Error('Project not found');
 
-    const members = await prisma.invitations.findMany({
-      where: { projectId },
-      include: { invitee: true },
-      skip,
-      take,
+    // accepted
+    const acceptedMembers = await prisma.project_members.findMany({
+      where: {
+        projectId,
+      },
+      include: { user: true },
     });
 
-    const total = await prisma.invitations.count({
-      where: { projectId },
+    // pending
+    const pendingInvites = await prisma.invitations.findMany({
+      where: { projectId, status: 'pending' },
+      include: { invitee: true },
     });
+
+    // total
+    const unified = [
+      ...acceptedMembers.map((m) => ({
+        status: 'accepted' as const,
+        invitationId: null,
+        invitee: {
+          id: m.userId,
+          name: m.user.name,
+          email: m.user.email,
+          profileImage: m.user.profileImage,
+        },
+      })),
+      ...pendingInvites.map((i) => ({
+        status: 'pending' as const,
+        invitationId: i.id,
+        invitee: {
+          id: i.inviteeId,
+          name: i.invitee.name,
+          email: i.invitee.email,
+          profileImage: i.invitee.profileImage,
+        },
+      })),
+    ];
+
+    // 페이지네이션
+    const total = unified.length + 1;
+    const start = Math.max(0, skip);
+    const end = Math.min(unified.length, skip + take);
+    const members = unified.slice(start, end);
 
     return {
       creator: {
@@ -53,7 +80,7 @@ export const memberRepository = {
       },
       creatorId: project.creatorId,
       members,
-      total: total + 1, // creator 포함
+      total,
     };
   },
 
@@ -66,7 +93,7 @@ export const memberRepository = {
   async findProjectById(projectId: number) {
     return await prisma.projects.findUnique({
       where: { id: projectId },
-      select: { id: true },
+      select: { id: true, creatorId: true },
     });
   },
 
@@ -88,24 +115,18 @@ export const memberRepository = {
   },
 
   async removeProjectMember(projectId: number, targetUserId: number): Promise<void> {
-    await prisma.$transaction([
-      prisma.project_members.deleteMany({
-        where: {
-          projectId,
-          userId: targetUserId,
-        },
-      }),
-      prisma.invitations.updateMany({
-        where: {
-          projectId,
-          inviteeId: targetUserId,
-          status: 'accepted', // 현재 accepted 상태인 경우만 변경
-        },
-        data: {
-          status: 'rejected',
-        },
-      }),
-    ]);
+    await prisma.$transaction(async (tx) => {
+      // accepted 제거
+      await tx.project_members.deleteMany({
+        where: { projectId, userId: targetUserId },
+      });
+
+      // pending 초대는 거절 처리로 변경
+      await tx.invitations.updateMany({
+        where: { projectId, inviteeId: targetUserId, status: 'pending' },
+        data: { status: 'rejected' },
+      });
+    });
   },
 
   async isProjectOwner(projectId: number, userId: number) {
@@ -173,6 +194,68 @@ export const memberRepository = {
   async deleteInvitation(invitationId: number) {
     return prisma.invitations.delete({
       where: { id: invitationId },
+    });
+  },
+
+  async findInvitationsByInvitee(
+    inviteeId: number,
+    status?: 'pending' | 'accepted' | 'rejected',
+    skip = 0,
+    take = 10
+  ): Promise<{
+    data: Array<{
+      id: number;
+      status: 'pending' | 'accepted' | 'rejected';
+      projectId: number;
+      invitedAt: Date;
+      project: { id: number; name: string; description: string | null };
+    }>;
+    total: number;
+  }> {
+    const where = {
+      inviteeId,
+      ...(status ? { status } : {}),
+    };
+
+    const [data, total] = await Promise.all([
+      prisma.invitations.findMany({
+        where,
+        select: {
+          id: true,
+          status: true,
+          projectId: true,
+          invitedAt: true,
+          project: { select: { id: true, name: true, description: true } },
+        },
+        orderBy: { invitedAt: 'desc' },
+        skip,
+        take,
+      }),
+      prisma.invitations.count({ where }),
+    ]);
+
+    return { data, total };
+  },
+
+  async rejectInvitation(invitationId: number) {
+    return prisma.invitations.update({
+      where: { id: invitationId },
+      data: { status: 'rejected' },
+    });
+  },
+
+  async hasPendingInvite(projectId: number, userId: number): Promise<boolean> {
+    const pending = await prisma.invitations.findFirst({
+      where: { projectId, inviteeId: userId, status: 'pending' },
+      select: { id: true },
+    });
+    return !!pending;
+  },
+
+  // 필요하면 count가 필요한 경우도 제공 가능
+  async countPendingInvites(projectId: number, userId: number): Promise<number> {
+    return prisma.invitations.count({
+      where: { projectId, inviteeId: userId, status: 'pending' },
     });
   },
 };
