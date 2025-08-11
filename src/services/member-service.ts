@@ -46,20 +46,22 @@ export const memberService = {
     };
 
     const memberDtos: ProjectMemberResponse[] = await Promise.all(
-      members.map(async (member) => {
-        const { id, name, email, profileImage } = member.invitee;
-        const taskCount = await memberRepository.getTaskCount(projectId, id);
+      members
+        .filter((m) => m.invitee.id !== creatorId)
+        .map(async (member) => {
+          const { id, name, email, profileImage } = member.invitee;
+          const taskCount = await memberRepository.getTaskCount(projectId, id);
 
-        return {
-          id,
-          name,
-          email,
-          profileImage,
-          taskCount,
-          status: member.status,
-          invitationId: member.id,
-        };
-      })
+          return {
+            id,
+            name,
+            email,
+            profileImage,
+            taskCount,
+            status: member.status,
+            invitationId: member.invitationId ?? null,
+          };
+        })
     );
 
     return {
@@ -84,12 +86,22 @@ export const memberService = {
     const isAdmin = await memberRepository.checkProjectAdmin(projectId, requestUserId);
     if (!isAdmin) throw { status: statusCode.forbidden, message: errorMsg.accessDenied };
 
+    if (targetUserId === project.creatorId) {
+      throw { status: statusCode.badRequest, message: '프로젝트 생성자는 제외할 수 없습니다.' };
+    }
+
     if (requestUserId === targetUserId) {
       throw { status: statusCode.badRequest, message: errorMsg.wrongRequestFormat };
     }
 
-    const isMember = await memberRepository.isProjectMember(projectId, targetUserId);
-    if (!isMember) throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
+    const [isMember, hasPending] = await Promise.all([
+      memberRepository.isProjectMember(projectId, targetUserId),
+      memberRepository.hasPendingInvite(projectId, targetUserId),
+    ]);
+
+    if (!isMember && !hasPending) {
+      throw { status: statusCode.notFound, message: errorMsg.dataNotFound };
+    }
 
     await memberRepository.removeProjectMember(projectId, targetUserId);
   },
