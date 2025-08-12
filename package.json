@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon --watch src --exec ts-node --files --require tsconfig-paths/register src/server.ts",
     "build": "tsc",
-    "start": "node dist/src/server.js",
+    "start": "node dist/server.js",
     "prepare": "husky",
     "prisma:generate": "prisma generate",
     "prisma:migrate:deploy": "prisma migrate deploy"
