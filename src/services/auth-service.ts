@@ -170,11 +170,8 @@ class AuthService {
       // refresh token db저장
       await this.saveRefreshToken(user.id, refreshToken);
       // 쿼리 파라미터로 토큰을 포함하여 프론트엔드 사이트에 리디렉션
-      // const frontendUrl = process.env.FRONTEND_URL!;
-      // res.redirect(frontendUrl);
-      const raw = process.env.FRONTEND_URL || 'http://localhost:3000';
-      const fe = raw.startsWith('http') ? raw : `https://${raw}`; // 프로토콜 보정
-      res.redirect(fe);
+      const frontendUrl = process.env.FRONTEND_URL!;
+      res.redirect(frontendUrl);
     } catch (err) {
       next(err);
     }
