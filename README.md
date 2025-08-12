@@ -139,7 +139,9 @@
 
 ## 🌐 구현 홈페이지
 
-👉 [https://nb-02-moon-shot-fe.vercel.app/login](https://nb-02-moon-shot-fe.vercel.app/login)
+**배포 링크** [https://nb-02-moon-shot-fe.vercel.app/login](https://nb-02-moon-shot-fe.vercel.app/login)
+
+**Swagger**: [https://nb02-moonshot.onrender.com/api-docs/](https://nb02-moonshot.onrender.com/api-docs/)
 
 ---
 
@@ -155,6 +157,7 @@
 📎 [회고 링크 / Notion / PPT 등](#)
 
 ---
+
 
 
 
