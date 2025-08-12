@@ -62,36 +62,79 @@
 ## 📁 프로젝트 파일 구조
 📦 프로젝트 루트
 ```
-├── 📁 src
-│   ├── 📁 config
-│   │   └── db.ts
-│   ├── 📁 controllers
-│   │   ├── auth.controller.ts
-│   │   └── user.controller.ts
-│   ├── 📁 middleware
-│   │   ├── error-handler.ts
-│   │   └── validation.ts
-│   ├── 📁 routes
-│   │   ├── auth.routes.ts
-│   │   └── user.routes.ts
-│   ├── 📁 services
-│   │   ├── auth.service.ts
-│   │   └── user.service.ts
-│   ├── 📁 utils
-│   │   ├── 📁 dto
-│   ├── 📁 types
-├── app.ts
-├── server.ts
-├── 📁 prisma
-│   ├── schema.prisma
-│   └── seed.ts
-├── .env
-├── .gitignore
-├── package.json
-├── tsconfig.json
-└── README.md
+📦src
+ ┣ 📂config
+ ┃ ┣ 📜db.ts
+ ┃ ┣ 📜firebase-admin.ts
+ ┃ ┗ 📜swagger.ts
+ ┣ 📂controllers
+ ┃ ┣ 📜auth-controllers.ts
+ ┃ ┣ 📜comment-controller.ts
+ ┃ ┣ 📜file-upload-controller.ts
+ ┃ ┣ 📜member-controller.ts
+ ┃ ┣ 📜project-controller.ts
+ ┃ ┣ 📜subtask-controller.ts
+ ┃ ┣ 📜task-controller.ts
+ ┃ ┗ 📜user-controller.ts
+ ┣ 📂middlewares
+ ┃ ┣ 📜authorization.ts
+ ┃ ┣ 📜error-handler.ts
+ ┃ ┣ 📜multer.ts
+ ┃ ┗ 📜validation.ts
+ ┣ 📂repositories
+ ┃ ┣ 📜auth-repositorie.ts
+ ┃ ┣ 📜comment-repository.ts
+ ┃ ┣ 📜member-repository.ts
+ ┃ ┣ 📜project-repository.ts
+ ┃ ┣ 📜subtask-repository.ts
+ ┃ ┣ 📜task-repository.ts
+ ┃ ┗ 📜user-repository.ts
+ ┣ 📂routes
+ ┃ ┣ 📜auth-route.ts
+ ┃ ┣ 📜comment-route.ts
+ ┃ ┣ 📜file-upload-route.ts
+ ┃ ┣ 📜index-route.ts
+ ┃ ┣ 📜member-route.ts
+ ┃ ┣ 📜project-route.ts
+ ┃ ┣ 📜subtask-route.ts
+ ┃ ┣ 📜task-route.ts
+ ┃ ┗ 📜user-route.ts
+ ┣ 📂services
+ ┃ ┣ 📜auth-service.ts
+ ┃ ┣ 📜comment-service.ts
+ ┃ ┣ 📜member-service.ts
+ ┃ ┣ 📜project-service.ts
+ ┃ ┣ 📜subtask-service.ts
+ ┃ ┣ 📜task-service.ts
+ ┃ ┗ 📜user-service.ts
+ ┣ 📂swagger
+ ┃ ┗ 📂paths
+ ┃ ┃ ┣ 📜auth-path.json
+ ┃ ┃ ┣ 📜member-path.json
+ ┃ ┃ ┣ 📜project-path.json
+ ┃ ┃ ┣ 📜subtask-path.json
+ ┃ ┃ ┣ 📜task-path.json
+ ┃ ┃ ┗ 📜user-path.json
+ ┣ 📂types
+ ┃ ┣ 📜express.d.ts
+ ┃ ┣ 📜subtask-type.ts
+ ┃ ┗ 📜task-type.ts
+ ┣ 📂utils
+ ┃ ┣ 📂dtos
+ ┃ ┃ ┣ 📜comment-dto.ts
+ ┃ ┃ ┣ 📜member-dto.ts
+ ┃ ┃ ┣ 📜project-dto.ts
+ ┃ ┃ ┗ 📜task-dto.ts
+ ┃ ┣ 📂passport
+ ┃ ┃ ┣ 📜googleStrategy.ts
+ ┃ ┃ ┣ 📜index.ts
+ ┃ ┃ ┗ 📜jwtStrategy.ts
+ ┃ ┣ 📜email.ts
+ ┃ ┗ 📜token.ts
+ ┣ 📜app.ts
+ ┗ 📜server.ts
 
-```
+
 ---
 
 ## 🌐 구현 홈페이지
@@ -114,6 +157,7 @@
 📎 [회고 링크 / Notion / PPT 등](#)
 
 ---
+
 
 
 
