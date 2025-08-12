@@ -189,7 +189,7 @@
       ],
       "responses": {
         "200": {
-         "description": "초대 수락 성공 (응답 본문 없음)"
+          "description": "초대 수락 성공 (응답 본문 없음)"
         },
         "400": {
           "description": "잘못된 요청 형식"
@@ -200,11 +200,12 @@
       }
     }
   },
-  
   "/invitations/{invitationId}": {
     "delete": {
       "summary": "초대 삭제",
-      "tags": ["Members"],
+      "tags": [
+        "Members"
+      ],
       "parameters": [
         {
           "in": "path",
@@ -225,7 +226,7 @@
         "204": {
           "description": "초대 삭제 성공 (응답 본문 없음)"
         },
-        "400":{
+        "400": {
           "description": "잘못된 요청 형식"
         },
         "401": {
@@ -236,6 +237,180 @@
         },
         "404": {
           "description": "초대를 찾을 수 없음"
+        }
+      }
+    }
+  },
+  "/invitations/me": {
+    "get": {
+      "tags": [
+        "Members"
+      ],
+      "summary": "내가 받은 초대 목록 조회",
+      "parameters": [
+        {
+          "name": "status",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "accepted",
+              "rejected",
+              "all"
+            ],
+            "default": "pending",
+            "example": "pending"
+          },
+          "description": "초대 상태 필터"
+        },
+        {
+          "name": "page",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 1,
+            "example": 1
+          },
+          "description": "페이지 번호 (1부터 시작)"
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 10,
+            "example": 10
+          },
+          "description": "한 페이지당 항목 개수"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "초대 목록 조회 성공",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending",
+                            "accepted",
+                            "rejected"
+                          ],
+                          "example": "pending"
+                        },
+                        "projectId": {
+                          "type": "integer",
+                          "example": 2
+                        },
+                        "invitedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-08-12T09:00:00Z"
+                        },
+                        "project": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "example": 2
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "프로젝트 A"
+                            },
+                            "description": {
+                              "type": "string",
+                              "nullable": true,
+                              "example": "프로젝트 설명"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "total": {
+                    "type": "integer",
+                    "example": 15
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "잘못된 요청 형식"
+        },
+        "401": {
+          "description": "로그인이 필요합니다"
+        },
+        "403": {
+          "description": "프로젝트 멤버가 아닙니다"
+        }
+      }
+    }
+  },
+  "/invitations/{invitationId}/reject": {
+    "delete": {
+      "tags": [
+        "Members"
+      ],
+      "summary": "멤버 초대 거절",
+      "parameters": [
+        {
+          "name": "invitationId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "example": 1
+          },
+          "description": "거절할 초대 ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "초대 거절 성공",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "초대 거절 완료"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "잘못된 요청 (이미 수락/거절된 초대)"
+        },
+        "401": {
+          "description": "로그인 필요"
+        },
+        "403": {
+          "description": "본인 초대가 아닌 경우 접근 거부"
+        },
+        "404": {
+          "description": "초대 데이터 없음"
         }
       }
     }
