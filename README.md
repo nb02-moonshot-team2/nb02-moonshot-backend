@@ -133,21 +133,19 @@
  ┃ ┗ 📜token.ts
  ┣ 📜app.ts
  ┗ 📜server.ts
-
+```
 
 ---
 
 ## 🌐 구현 홈페이지
 
-👉 [배포 링크 삽입 예정](#)
+👉 [https://nb02-moonshot.onrender.com/](https://nb02-moonshot.onrender.com/)
 
 ---
 
 ## 📊 ERD (Entity Relationship Diagram)
 
-> ERD 이미지 삽입 예시
-
-![moonshotERD](./images/ERDmoonshot.png)
+<img width="1334" height="655" alt="image" src="https://github.com/user-attachments/assets/5ab19065-4be4-48c7-a097-a5b924a1b961" />
 
 ---
 
@@ -157,6 +155,7 @@
 📎 [회고 링크 / Notion / PPT 등](#)
 
 ---
+
 
 
 
