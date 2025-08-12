@@ -22,14 +22,14 @@ if (process.env.NODE_ENV === 'production') {
 // ---- CORS 허용 목록 구성 ----
 const prodFe = process.env.FRONTEND_URL ?? '';
 
-const priviewFeList = (process.env.FRONTEND_PREVIEWS ?? '')
+const previewFeList = (process.env.FRONTEND_PREVIEWS ?? '')
   .split(',')
   .map((s) => s.trim())
   .filter(Boolean);
 
 const localList = ['http://localhost:3000', 'http://127.0.0.1:3000'];
 
-const allowList = new Set([prodFe, ...priviewFeList, ...localList].filter(Boolean));
+const allowList = new Set([prodFe, ...previewFeList, ...localList].filter(Boolean));
 
 app.use(
   cors({
