@@ -62,8 +62,6 @@ export const memberService = {
             invitationId: member.invitationId ?? null,
           };
         })
-
-
     );
 
     return {
