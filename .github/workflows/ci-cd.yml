@@ -1,0 +1,38 @@
+name: backend-ci-cd
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build (TypeScript + Prisma generate)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - run: npm ci
+      - run: npm run prisma:generate
+      - run: npm run build
+
+  deploy:
+    name: Deploy to Render
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: render-deploy-main
+      cancel-in-progress: true
+    steps:
+      - name: Trigger Render Deploy Hook
+        run: |
+          curl -fsSL -X POST "${RENDER_DEPLOY_HOOK}"
+    env:
+      RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
