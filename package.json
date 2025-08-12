@@ -8,10 +8,13 @@
     "start": "node dist/src/server.js",
     "prepare": "husky",
     "prisma:generate": "prisma generate",
-    "prisma: migrate:deploy": "prisma migrate deploy"
+    "prisma:migrate:deploy": "prisma migrate deploy"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "lint-staged": {
     "*.{js,ts}": [
