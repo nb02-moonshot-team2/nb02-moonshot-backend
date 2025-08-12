@@ -139,7 +139,7 @@
 
 ## 🌐 구현 홈페이지
 
-👉 [https://nb02-moonshot.onrender.com/](https://nb02-moonshot.onrender.com/)
+👉 [https://nb-02-moon-shot-fe.vercel.app/login](https://nb-02-moon-shot-fe.vercel.app/login)
 
 ---
 
@@ -155,6 +155,7 @@
 📎 [회고 링크 / Notion / PPT 등](#)
 
 ---
+
 
 
 
