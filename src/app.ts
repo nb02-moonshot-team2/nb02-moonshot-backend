@@ -22,6 +22,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(passport.initialize());
 
+// render 헬스 체크용
+app.get('/health', (req, res) => res.status(200).send('OK'));
+
 // 라우터 등록
 app.use('/', routes);
 
