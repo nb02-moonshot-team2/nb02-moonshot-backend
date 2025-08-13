@@ -35,76 +35,126 @@
 
 ## 🧩 팀원별 구현 기능
 
-> 각자 개발한 기능에 대한 스크린샷, GIF, 설명 등을 첨부해주세요.
-
 ### 💻 고민재
-- (구현 기능 요약)
-- ![기능 이미지](./img/minjae.gif)
-
+#### 하위 할 일
+- 하위 할 일 등록/조회/상세조회/수정/삭제
+  
 ### 💻 김진솔
-- (구현 기능 요약)
-- ![기능 이미지](./img/jinsol.gif)
+#### 멤버
+- 멤버 초대/추가/제외/수락/거부
+    
+#### 댓글
+- 댓글 등록/조회/수정/삭제
 
 ### 💻 하상준
-- (구현 기능 요약)
-- ![기능 이미지](./img/sangjun.gif)
+#### 할 일
+- 할 일 등록/조회/상세조회/수정/삭제
+
+#### 파일 업로드
+- 첨부파일 업로드
 
 ### 💻 강시연
-- (구현 기능 요약)
-- ![기능 이미지](./img/siyeon.gif)
+#### 유저
+- 유저 조회/수정/참여중 프로젝트 조회/참여중 프로젝트 할 일 조회
+ 
+#### 프로젝트
+- 프로젝트 등록/조회/수정/삭제
 
 ### 💻 차수연
-- (구현 기능 요약)
-- ![기능 이미지](./img/sooyeon.gif)
+#### 인증
+- 회원가입/로그인/토큰 갱신/구글 로그인/구글 로그인(콜백)
 
 ---
 
 ## 📁 프로젝트 파일 구조
 📦 프로젝트 루트
 ```
-├── 📁 src
-│   ├── 📁 config
-│   │   └── db.ts
-│   ├── 📁 controllers
-│   │   ├── auth.controller.ts
-│   │   └── user.controller.ts
-│   ├── 📁 middleware
-│   │   ├── error-handler.ts
-│   │   └── validation.ts
-│   ├── 📁 routes
-│   │   ├── auth.routes.ts
-│   │   └── user.routes.ts
-│   ├── 📁 services
-│   │   ├── auth.service.ts
-│   │   └── user.service.ts
-│   ├── 📁 utils
-│   │   ├── 📁 dto
-│   ├── 📁 types
-├── app.ts
-├── server.ts
-├── 📁 prisma
-│   ├── schema.prisma
-│   └── seed.ts
-├── .env
-├── .gitignore
-├── package.json
-├── tsconfig.json
-└── README.md
-
+📦src
+ ┣ 📂config
+ ┃ ┣ 📜db.ts
+ ┃ ┣ 📜firebase-admin.ts
+ ┃ ┗ 📜swagger.ts
+ ┣ 📂controllers
+ ┃ ┣ 📜auth-controllers.ts
+ ┃ ┣ 📜comment-controller.ts
+ ┃ ┣ 📜file-upload-controller.ts
+ ┃ ┣ 📜member-controller.ts
+ ┃ ┣ 📜project-controller.ts
+ ┃ ┣ 📜subtask-controller.ts
+ ┃ ┣ 📜task-controller.ts
+ ┃ ┗ 📜user-controller.ts
+ ┣ 📂middlewares
+ ┃ ┣ 📜authorization.ts
+ ┃ ┣ 📜error-handler.ts
+ ┃ ┣ 📜multer.ts
+ ┃ ┗ 📜validation.ts
+ ┣ 📂repositories
+ ┃ ┣ 📜auth-repositorie.ts
+ ┃ ┣ 📜comment-repository.ts
+ ┃ ┣ 📜member-repository.ts
+ ┃ ┣ 📜project-repository.ts
+ ┃ ┣ 📜subtask-repository.ts
+ ┃ ┣ 📜task-repository.ts
+ ┃ ┗ 📜user-repository.ts
+ ┣ 📂routes
+ ┃ ┣ 📜auth-route.ts
+ ┃ ┣ 📜comment-route.ts
+ ┃ ┣ 📜file-upload-route.ts
+ ┃ ┣ 📜index-route.ts
+ ┃ ┣ 📜member-route.ts
+ ┃ ┣ 📜project-route.ts
+ ┃ ┣ 📜subtask-route.ts
+ ┃ ┣ 📜task-route.ts
+ ┃ ┗ 📜user-route.ts
+ ┣ 📂services
+ ┃ ┣ 📜auth-service.ts
+ ┃ ┣ 📜comment-service.ts
+ ┃ ┣ 📜member-service.ts
+ ┃ ┣ 📜project-service.ts
+ ┃ ┣ 📜subtask-service.ts
+ ┃ ┣ 📜task-service.ts
+ ┃ ┗ 📜user-service.ts
+ ┣ 📂swagger
+ ┃ ┗ 📂paths
+ ┃ ┃ ┣ 📜auth-path.json
+ ┃ ┃ ┣ 📜member-path.json
+ ┃ ┃ ┣ 📜project-path.json
+ ┃ ┃ ┣ 📜subtask-path.json
+ ┃ ┃ ┣ 📜task-path.json
+ ┃ ┃ ┗ 📜user-path.json
+ ┣ 📂types
+ ┃ ┣ 📜express.d.ts
+ ┃ ┣ 📜subtask-type.ts
+ ┃ ┗ 📜task-type.ts
+ ┣ 📂utils
+ ┃ ┣ 📂dtos
+ ┃ ┃ ┣ 📜comment-dto.ts
+ ┃ ┃ ┣ 📜member-dto.ts
+ ┃ ┃ ┣ 📜project-dto.ts
+ ┃ ┃ ┗ 📜task-dto.ts
+ ┃ ┣ 📂passport
+ ┃ ┃ ┣ 📜googleStrategy.ts
+ ┃ ┃ ┣ 📜index.ts
+ ┃ ┃ ┗ 📜jwtStrategy.ts
+ ┃ ┣ 📜email.ts
+ ┃ ┗ 📜token.ts
+ ┣ 📜app.ts
+ ┗ 📜server.ts
 ```
+
 ---
 
 ## 🌐 구현 홈페이지
 
-👉 [배포 링크 삽입 예정](#)
+- **배포 링크**: [https://nb-02-moon-shot-fe.vercel.app/login](https://nb-02-moon-shot-fe.vercel.app/login)
+
+- **Swagger**: [https://nb02-moonshot.onrender.com/api-docs/](https://nb02-moonshot.onrender.com/api-docs/)
 
 ---
 
 ## 📊 ERD (Entity Relationship Diagram)
 
-> ERD 이미지 삽입 예시
-
-![moonshotERD](./images/ERDmoonshot.png)
+<img width="1334" height="655" alt="image" src="https://github.com/user-attachments/assets/5ab19065-4be4-48c7-a097-a5b924a1b961" />
 
 ---
 
@@ -114,6 +164,18 @@
 📎 [회고 링크 / Notion / PPT 등](#)
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
