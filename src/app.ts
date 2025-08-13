@@ -13,7 +13,7 @@ const app = express();
 // 미들웨어 설정
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000', 'https://nb-02-moon-shot-fe.vercel.app'],
     credentials: true,
   })
 );
