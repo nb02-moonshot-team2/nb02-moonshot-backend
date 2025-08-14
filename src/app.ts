@@ -10,25 +10,31 @@ import { errorHandler } from './middlewares/error-handler';
 
 const app = express();
 
-// 미들웨어 설정
 app.use(
   cors({
     origin: ['http://localhost:3000', 'https://nb-02-moon-shot-fe.vercel.app'],
     credentials: true,
   })
 );
+
+// 프록시(HTTPS 뒤)에서 secure 쿠키 허용
+app.set('trust proxy', 1);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(passport.initialize());
 
-// 라우터 등록
+// Render 헬스체크 (설정의 경로와 동일하게)
+app.get('/health', (_req, res) => res.status(200).send('OK'));
+
+// 라우터
 app.use('/', routes);
 
-// 스웨거 사용
+// Swagger
 useSwagger(app);
 
-// 에러 미들웨어 등록
+// 에러 핸들러
 app.use(errorHandler);
 
 export default app;

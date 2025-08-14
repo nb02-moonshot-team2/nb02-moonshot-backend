@@ -8,7 +8,7 @@ const googleStrategy = new GoogleStrategy(
   {
     clientID: process.env.GOOGLE_CLIENT_ID as string,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-    callbackURL: 'http://localhost:3001/auth/google/callback',
+    callbackURL: process.env.GOOGLE_REDIRECT_URI,
     passReqToCallback: true,
   },
   async (

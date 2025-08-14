@@ -57,7 +57,7 @@ model Projects {
 
 model Invitations {
   id         Int               @id @default(autoincrement())
-  project    Projects          @relation(fields: [projectId], references: [id])
+  project    Projects          @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId  Int
   invitor    Users             @relation("SentInvitations", fields: [invitorId], references: [id], onDelete: Cascade)
   invitorId  Int
