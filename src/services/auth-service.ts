@@ -170,8 +170,9 @@ class AuthService {
       // refresh token db저장
       await this.saveRefreshToken(user.id, refreshToken);
       // 쿼리 파라미터로 토큰을 포함하여 프론트엔드 사이트에 리디렉션
-      const frontendUrl = process.env.FRONTEND_URL!;
-      res.redirect(frontendUrl);
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      const redirectUrl = `${frontendUrl}/api/google?accessToken=${accessToken}&refreshToken=${refreshToken}`;
+      res.redirect(redirectUrl);
     } catch (err) {
       next(err);
     }
@@ -187,11 +188,15 @@ class AuthService {
     res.cookie(process.env.ACCESS_TOKEN_COOKIE_NAME as string, accessToken, {
       httpOnly: true,
       secure: true,
+      sameSite: 'none',
+      path: '/',
       maxAge: 1 * 60 * 60 * 1000, // 1 hour
     });
     res.cookie(process.env.REFRESH_TOKEN_COOKIE_NAME as string, refreshToken, {
       httpOnly: true,
       secure: true,
+      sameSite: 'none',
+      path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
   }

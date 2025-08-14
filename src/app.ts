@@ -12,13 +12,13 @@ const app = express();
 
 app.use(
   cors({
-    origin: ['http://localhost:3000/', 'https://nb-02-moon-shot-fe.vercel.app/'],
+    origin: ['http://localhost:3000', 'https://nb-02-moon-shot-fe.vercel.app'],
     credentials: true,
   })
 );
 
 // 프록시(HTTPS 뒤)에서 secure 쿠키 허용
-// app.set('trust proxy', 1);
+app.set('trust proxy', 1);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
