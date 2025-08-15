@@ -126,6 +126,16 @@ export const memberService = {
       throw { status: statusCode.badRequest, message: errorMsg.wrongRequestFormat };
     }
 
+    const isMember = await memberRepository.isProjectMember(projectId, invitee.id);
+    if (isMember) {
+      throw { status: statusCode.badRequest, message: '이미 프로젝트 멤버 입니다.' };
+    }
+
+    const hasPending = await memberRepository.hasPendingInvite(projectId, invitee.id);
+    if (hasPending) {
+      throw { status: statusCode.badRequest, message: '이미 초대된 멤버 입니다.' };
+    }
+
     const invitation = await memberRepository.createInvitation(projectId, invitorId, invitee.id);
 
     return { invitationId: invitation.token };
