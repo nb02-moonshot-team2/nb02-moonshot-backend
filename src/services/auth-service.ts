@@ -173,8 +173,7 @@ class AuthService {
 
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 
-      const redirectUrl = `${frontendUrl}/api/google?accessToken=${accessToken}&refreshToken=${refreshToken}`;
-      res.redirect(redirectUrl);
+      res.redirect(`${frontendUrl}/projects`);
     } catch (err) {
       next(err);
     }
